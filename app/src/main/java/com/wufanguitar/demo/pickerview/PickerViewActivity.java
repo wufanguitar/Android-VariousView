@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: Frank Wu
@@ -40,12 +41,12 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<ArrayList<String>> options2Items = new ArrayList<>();
 
     /* private ArrayList<ArrayList<ArrayList<IPickerViewData>>> options3Items = new ArrayList<>(); */
-    private Button btn_Time, btn_Options, btn_CustomOptions, btn_CustomTime, btn_no_linkage, btn_to_Fragment
-            , btn_ContentView_default;
+    private Button btn_Time, btn_Options, btn_CustomOptions, btn_CustomTime, btn_no_linkage, btn_to_Fragment, btn_ContentView_default, btn_ContentView_reject, btn_ContentView_back;
 
     private TimePickerView pvTime, pvCustomTime, pvCustomLunar;
-    private OptionsPickerView pvOptions, pvCustomOptions, pvNoLinkOptions;
+    private OptionsPickerView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack;
     private ContentView cvDefault;
+    private ContentView cvReject;
     private ArrayList<CardBean> cardItem = new ArrayList<>();
 
     private ArrayList<String> food = new ArrayList<>();
@@ -67,6 +68,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         initCustomOptionPicker();
         initNoLinkOptionsPicker();
         initContentViewDefault();
+        initContentViewReject();
+        initContentViewBackToPrestep();
 
         btn_Time = (Button) findViewById(R.id.btn_Time);
         btn_Options = (Button) findViewById(R.id.btn_Options);
@@ -75,6 +78,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_no_linkage = (Button) findViewById(R.id.btn_no_linkage);
         btn_to_Fragment = (Button) findViewById(R.id.btn_fragment);
         btn_ContentView_default = (Button) findViewById(R.id.btn_Content);
+        btn_ContentView_reject = (Button) findViewById(R.id.btn_Content_edit);
+        btn_ContentView_back = (Button) findViewById(R.id.btn_Content_back);
 
         btn_Time.setOnClickListener(this);
         btn_Options.setOnClickListener(this);
@@ -83,6 +88,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_no_linkage.setOnClickListener(this);
         btn_to_Fragment.setOnClickListener(this);
         btn_ContentView_default.setOnClickListener(this);
+        btn_ContentView_reject.setOnClickListener(this);
+        btn_ContentView_back.setOnClickListener(this);
 
         findViewById(R.id.btn_GotoJsonData).setOnClickListener(this);
         findViewById(R.id.btn_lunar).setOnClickListener(this);
@@ -121,7 +128,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                                 pvCustomLunar.dismiss();
                             }
                         });
-                        //公农历切换
+//                        公农历切换
                         CheckBox cb_lunar = (CheckBox) v.findViewById(R.id.cb_lunar);
                         cb_lunar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
@@ -246,6 +253,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                     public void customLayout(View v) {
                         final TextView tvSubmit = (TextView) v.findViewById(R.id.tv_finish);
                         ImageView ivCancel = (ImageView) v.findViewById(R.id.iv_cancel);
+                        final TextView tvCenter = (TextView) v.findViewById(R.id.tv_center_custom);
                         tvSubmit.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -257,6 +265,12 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                             @Override
                             public void onClick(View v) {
                                 pvCustomTime.dismiss();
+                            }
+                        });
+                        tvCenter.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                tvCenter.setText("改变");
                             }
                         });
                     }
@@ -293,6 +307,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                         final TextView tvSubmit = (TextView) v.findViewById(R.id.tv_finish);
                         final TextView tvAdd = (TextView) v.findViewById(R.id.tv_add);
                         ImageView ivCancel = (ImageView) v.findViewById(R.id.iv_cancel);
+                        TextView tvCenter = (TextView) v.findViewById(R.id.tv_option_center);
                         tvSubmit.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -313,6 +328,13 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                             public void onClick(View v) {
                                 getCardData();
                                 pvCustomOptions.setRelatedPicker(cardItem);
+                            }
+                        });
+
+                        tvCenter.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(PickerViewActivity.this, "option center click", Toast.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -345,6 +367,56 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 .setBottomBtnStr("知道了")
                 .setContentStr("早上9:00到下午18:00")
                 .build();
+    }
+
+    private void initContentViewReject() {
+        cvReject = new ContentView.Builder(this).setLayoutRes(R.layout.view_content_reject)
+                .setTitleStr("驳回审核备注")
+                .setRightBtnStr("取消")
+                .setBottomBtnStr("确认驳回")
+                .build();
+    }
+
+    private void initContentViewBackToPrestep() {
+        List<String> list = new ArrayList();
+        list.add("chenjie(hrdp)");
+        list.add("zhengjing01(直属上级审批)");
+        list.add("liangshixiong48441(一级目录审批)");
+        cvBack = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int optionsFirst, int optionsSecond, int optionsThird, View view) {
+                cvBack.dismissImmediately();
+                cvReject = new ContentView.Builder(PickerViewActivity.this).setLayoutRes(R.layout.view_content_reject)
+                        .setTitleStr("驳回审核备注")
+                        .setRightBtnStr("×")
+                        .setLeftBtnStr("上一步")
+                        .setBottomBtnStr("确认驳回")
+                        .setOnClickListener(new ContentView.OnClickListener() {
+                            @Override
+                            public void onLeftClick(ContentView pickerView, View view) {
+                                cvReject.dismissImmediately();
+                                if (cvBack != null) {
+                                    cvBack.show(false);
+                                }
+                            }
+
+                            @Override
+                            public void onRightClick(ContentView pickerView, View view) {
+                                cvReject.dismiss();
+                            }
+
+                            @Override
+                            public void onBottomClick(ContentView pickerView, View view) {
+                                cvReject.dismiss();
+                            }
+                        })
+                        .build();
+                cvReject.show(false);
+            }
+        }).setCenterLabel(true)
+                .setLabels("√", "", "")
+                .build();
+        cvBack.setNoRelatedPicker(list, null, null);
     }
 
     private void getOptionData() {
@@ -405,6 +477,10 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
             pvCustomLunar.show();
         } else if (v.getId() == R.id.btn_Content) {
             cvDefault.show();
+        } else if (v.getId() == R.id.btn_Content_edit) {
+            cvReject.show();
+        } else if (v.getId() == R.id.btn_Content_back) {
+            cvBack.show();
         }
     }
 

@@ -5,16 +5,15 @@ import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.wufanguitar.variousview.R;
+import com.wufanguitar.variousview.semi.base.BaseView;
 import com.wufanguitar.variousview.semi.callback.ICustomLayout;
 import com.wufanguitar.variousview.semi.lib.DividerType;
-import com.wufanguitar.variousview.semi.base.BaseView;
 import com.wufanguitar.variousview.semi.view.WheelTime;
 
 import java.text.ParseException;
@@ -23,11 +22,14 @@ import java.util.Date;
 
 /**
  * @Author: Frank Wu
+ * @Time: 2017/12/28 on 18:14
  * @Email: wu.fanguitar@163.com
  * @Description: 时间选择器
  */
 
 public class TimePickerView extends BaseView implements View.OnClickListener {
+    private static final String TAG_LEFT = "left";
+    private static final String TAG_RIGHT = "right";
     private static final String TAG_SUBMIT = "submit";
     private static final String TAG_CANCEL = "cancel";
     // 时间选择器布局
@@ -36,6 +38,8 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
     private int mBackgroundColor;
     // 自定义布局回调接口
     private ICustomLayout mICustomLayout;
+    // OptionsPickerView的点击事件
+    private OnClickListener mOnClickListener;
 
     protected WheelTime mWheelTime;
 
@@ -52,6 +56,10 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
     // 顶部左侧/右侧按钮文字大小
     private int mLeftRightBtnStrSize;
 
+    // 顶部标题栏布局
+    private RelativeLayout mTopBarRL;
+    // 顶部标题栏背景颜色
+    private int mTopBarBgColor;
     // 顶部标题
     private AppCompatTextView mTitleTv;
     // 顶部标题文字
@@ -70,8 +78,6 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
 
     // 滚轮背景颜色
     private int mWheelViewBgColor;
-    // 顶部标题栏背景颜色
-    private int mTopBarBgColor;
 
     // 分割线以外的文字颜色
     private int mOutTextColor;
@@ -116,6 +122,7 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
     public TimePickerView(Builder builder) {
         super(builder.mContext);
         this.mTimeSelectListener = builder.mTimeSelectListener;
+        this.mOnClickListener = builder.mOnClickListener;
         this.mGravity = builder.mGravity;
         this.mTimeType = builder.mTimeType;
         this.mRightBtnStr = builder.mRightBtnStr;
@@ -170,6 +177,7 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
         private ICustomLayout mICustomLayout;
         private Context mContext;
         private OnTimeSelectListener mTimeSelectListener;
+        private OnClickListener mOnClickListener;
         // 显示类型，默认全部显示
         private boolean[] mTimeType = new boolean[]{true, true, true, true, true, true};
         private int mGravity = Gravity.CENTER;
@@ -221,6 +229,22 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
         public Builder(Context context, OnTimeSelectListener listener) {
             this.mContext = context;
             this.mTimeSelectListener = listener;
+        }
+
+        public Builder(Context context, OnClickListener onClickListener) {
+            this.mContext = context;
+            this.mOnClickListener = onClickListener;
+        }
+
+        public Builder setLayoutRes(int layoutRes, ICustomLayout customLayout) {
+            this.mLayoutRes = layoutRes;
+            this.mICustomLayout = customLayout;
+            return this;
+        }
+
+        public Builder setOnClickListener(OnClickListener onClickListener) {
+            this.mOnClickListener = onClickListener;
+            return this;
         }
 
         /**
@@ -311,12 +335,6 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
          */
         public Builder setSelectDate(Calendar selectDate) {
             this.mSelectDate = selectDate;
-            return this;
-        }
-
-        public Builder setLayoutRes(int layoutRes, ICustomLayout customLayout) {
-            this.mLayoutRes = layoutRes;
-            this.mICustomLayout = customLayout;
             return this;
         }
 
@@ -432,47 +450,41 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
         }
     }
 
-    protected void initView(Context context) {
+    private void initView(Context context) {
         setDialogOutSideCancelable(mCancelable);
         initViews(mBackgroundColor);
         init();
         initEvents();
         if (mICustomLayout == null) {
-            LayoutInflater.from(context).inflate(R.layout.view_picker_time, mContentContainer);
+            inflateCustomView(mLayoutRes);
 
             // 顶部标题
+            mTopBarRL = (RelativeLayout) findViewById(R.id.rl_topbar);
+            mTopBarRL.setBackgroundColor(mTopBarBgColor == 0 ? DEFAULT_TOPBAR_BACKGROUND_COLOR : mTopBarBgColor);
             mTitleTv = (AppCompatTextView) findViewById(R.id.tv_title);
-
-            // 顶部左侧/右侧按钮
-            mLeftBtn = (AppCompatButton) findViewById(R.id.btn_left);
-            mRightBtn = (AppCompatButton) findViewById(R.id.btn_right);
-
-            mLeftBtn.setTag(TAG_CANCEL);
-            mRightBtn.setTag(TAG_SUBMIT);
-
-            mLeftBtn.setOnClickListener(this);
-            mRightBtn.setOnClickListener(this);
-
-            // 设置文字
-            mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? context.getResources().getString(R.string.pickerview_cancel) : mLeftBtnStr);
-            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? context.getResources().getString(R.string.pickerview_submit) : mRightBtnStr);
             mTitleTv.setText(TextUtils.isEmpty(mTitleStr) ? "" : mTitleStr);
-
-            // 设置文字颜色
-            mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mLeftBtnStrColor);
-            mRightBtn.setTextColor(mRightBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mRightBtnStrColor);
             mTitleTv.setTextColor(mTitleStrColor == 0 ? DEFAULT_TOPBAR_TITLE_STRING_COLOR : mTitleStrColor);
-
-            // 设置文字大小
-            mLeftBtn.setTextSize(mLeftRightBtnStrSize);
-            mRightBtn.setTextSize(mLeftRightBtnStrSize);
             mTitleTv.setTextSize(mTitleStrSize);
 
-            RelativeLayout rv_top_bar = (RelativeLayout) findViewById(R.id.rl_topbar);
-            rv_top_bar.setBackgroundColor(mTopBarBgColor == 0 ? DEFAULT_TOPBAR_BACKGROUND_COLOR : mTopBarBgColor);
-        } else {
-            mICustomLayout.customLayout(LayoutInflater.from(context).inflate(mLayoutRes, mContentContainer));
+            // 顶部左侧
+            mLeftBtn = (AppCompatButton) findViewById(R.id.btn_left);
+            mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? context.getResources().getString(R.string.pickerview_cancel) : mLeftBtnStr);
+            mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mLeftBtnStrColor);
+            mLeftBtn.setTextSize(mLeftRightBtnStrSize);
+            mLeftBtn.setTag(mOnClickListener != null ? TAG_LEFT : TAG_CANCEL);
+            mLeftBtn.setOnClickListener(this);
+
+            // 顶部右侧
+            mRightBtn = (AppCompatButton) findViewById(R.id.btn_right);
+            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? context.getResources().getString(R.string.pickerview_submit) : mRightBtnStr);
+            mRightBtn.setTextColor(mRightBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mRightBtnStrColor);
+            mRightBtn.setTextSize(mLeftRightBtnStrSize);
+            mRightBtn.setTag(mOnClickListener != null ? TAG_RIGHT : TAG_SUBMIT);
+            mRightBtn.setOnClickListener(this);
+        } else if (inflateCustomView(mLayoutRes) != null) {
+            mICustomLayout.customLayout(inflateCustomView(mLayoutRes));
         }
+
         // 时间转轮 自定义控件
         LinearLayout timePickerView = (LinearLayout) findViewById(R.id.time_picker);
 
@@ -575,13 +587,27 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         String tag = (String) v.getTag();
-        if (tag.equals(TAG_SUBMIT)) {
-            returnData();
+        switch (tag) {
+            case TAG_LEFT:
+                if (mOnClickListener != null) {
+                    mOnClickListener.onLeftClick(this, v);
+                }
+                break;
+            case TAG_CANCEL:
+                cancel(TAG_CANCEL);
+                dismiss();
+                break;
+            case TAG_RIGHT:
+                if (mOnClickListener != null) {
+                    mOnClickListener.onRightClick(this, v);
+                }
+                break;
+            case TAG_SUBMIT:
+                returnData();
+                dismiss();
+            default:
+                break;
         }
-        if (tag.equals(TAG_CANCEL)) {
-            cancel();
-        }
-        dismiss();
     }
 
     public void returnData() {
@@ -626,5 +652,13 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
     @Override
     public boolean isDialog() {
         return mIsDialog;
+    }
+
+    public interface OnClickListener {
+        // 左按钮点击事件
+        void onLeftClick(TimePickerView pickerView, View view);
+
+        // 右按钮点击事件
+        void onRightClick(TimePickerView pickerView, View view);
     }
 }

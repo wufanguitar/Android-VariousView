@@ -2,15 +2,12 @@ package com.wufanguitar.variousview.semi;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.wufanguitar.variousview.R;
 import com.wufanguitar.variousview.semi.base.BaseView;
@@ -34,6 +31,7 @@ public class ContentView extends BaseView implements View.OnClickListener{
     private static final String TAG_BOTTOM = "bottom";
     private int mLayoutRes;
     private ICustomLayout mCustomLayout;
+    // ContentView的点击事件
     private OnClickListener mOnClickListener;
 
     private RelativeLayout mTopBarRLayout;
@@ -170,110 +168,115 @@ public class ContentView extends BaseView implements View.OnClickListener{
             this.mContext = context;
         }
 
+        public Builder(Context context, OnClickListener onClickListener) {
+            this.mContext = context;
+            this.mOnClickListener = onClickListener;
+        }
+
         // 设置内容布局
-        public ContentView.Builder setLayoutRes(int res) {
+        public Builder setLayoutRes(int res) {
             this.mLayoutRes = res;
             return this;
         }
 
         // 设置内容布局
-        public ContentView.Builder setLayoutRes(int res, ICustomLayout layout) {
+        public Builder setLayoutRes(int res, ICustomLayout layout) {
             this.mLayoutRes = res;
             this.mCustomLayout = layout;
             return this;
         }
 
-        public ContentView.Builder setTitleStr(String titleStr) {
+        public Builder setTitleStr(String titleStr) {
             this.mTitleStr = titleStr;
             return this;
         }
 
-        public ContentView.Builder setTitleStrColor(int titleStrColor) {
+        public Builder setTitleStrColor(int titleStrColor) {
             this.mTitleStrColor = titleStrColor;
             return this;
         }
 
-        public ContentView.Builder setTitleStrSize(int titleStrSize) {
+        public Builder setTitleStrSize(int titleStrSize) {
             this.mTitleStrSize = titleStrSize;
             return this;
         }
 
-        public ContentView.Builder setTitleBgColor(int titleBgColor) {
+        public Builder setTitleBgColor(int titleBgColor) {
             this.mTitleBgColor = titleBgColor;
             return this;
         }
 
-        public ContentView.Builder setRightBtnStr(String rightBtnStr) {
+        public Builder setRightBtnStr(String rightBtnStr) {
             this.mRightBtnStr = rightBtnStr;
             return this;
         }
 
-        public ContentView.Builder setLeftBtnStrColor(int color) {
+        public Builder setLeftBtnStrColor(int color) {
             this.mLeftBtnStrColor = color;
             return this;
         }
 
-        public ContentView.Builder setRightBtnStrColor(int color) {
+        public Builder setRightBtnStrColor(int color) {
             this.mRightBtnStrColor = color;
             return this;
         }
 
-        public ContentView.Builder setLeftBtnStr(String leftBtnStr) {
+        public Builder setLeftBtnStr(String leftBtnStr) {
             this.mLeftBtnStr = leftBtnStr;
             return this;
         }
 
-        public ContentView.Builder setLeftRightBtnStrSize(int leftRightBtnStrSize) {
+        public Builder setLeftRightBtnStrSize(int leftRightBtnStrSize) {
             this.mLeftRightBtnStrSize = leftRightBtnStrSize;
             return this;
         }
 
-        public ContentView.Builder setContentStr(String contentStr) {
+        public Builder setContentStr(String contentStr) {
             this.mContentStr = contentStr;
             return this;
         }
 
-        public ContentView.Builder setContentStrColor(int contentStrColor) {
+        public Builder setContentStrColor(int contentStrColor) {
             this.mContentStrColor = contentStrColor;
             return this;
         }
 
-        public ContentView.Builder setContentStrSize(int contentStrSize) {
+        public Builder setContentStrSize(int contentStrSize) {
             this.mContentStrSize = contentStrSize;
             return this;
         }
 
-        public ContentView.Builder setContentBgColor(int contentBgColor) {
+        public Builder setContentBgColor(int contentBgColor) {
             this.mContentBgColor = contentBgColor;
             return this;
         }
 
-        public ContentView.Builder setBottomBtnStr(String bottomBtnStr) {
+        public Builder setBottomBtnStr(String bottomBtnStr) {
             this.mBottomBtnStr = bottomBtnStr;
             return this;
         }
 
-        public ContentView.Builder setBottomBtnStrColor(int bottomBtnStrColor) {
+        public Builder setBottomBtnStrColor(int bottomBtnStrColor) {
             this.mBottomBtnStrColor = bottomBtnStrColor;
             return this;
         }
 
-        public ContentView.Builder setBottomBtnStrSize(int bottomBtnStrSize) {
+        public Builder setBottomBtnStrSize(int bottomBtnStrSize) {
             this.mBottomBtnStrSize = bottomBtnStrSize;
             return this;
         }
 
-        public ContentView.Builder setBottomBgColor(int bottomBgColor) {
+        public Builder setBottomBgColor(int bottomBgColor) {
             this.mBottomBgColor = bottomBgColor;
             return this;
         }
 
-        public ContentView.Builder isDialog(boolean isDialog) {
+        public Builder isDialog(boolean isDialog) {
             this.mIsDialog = isDialog;
             return this;
         }
 
-        public ContentView.Builder setOnClickListener(OnClickListener onClickListener) {
+        public Builder setOnClickListener(OnClickListener onClickListener) {
             this.mOnClickListener = onClickListener;
             return this;
         }
@@ -283,34 +286,23 @@ public class ContentView extends BaseView implements View.OnClickListener{
         }
     }
 
-
     private void initView(Context context) {
         setDialogOutSideCancelable(mCancelable);
         initViews(Color.TRANSPARENT);
         init();
         // 自定义部分
         if (mCustomLayout == null && mLayoutRes == R.layout.view_content_default) {
-            LayoutInflater.from(context).inflate(mLayoutRes, mContentContainer);
+            inflateCustomView(mLayoutRes);
             // 内容
             mContentTv = (AppCompatTextView) findViewById(R.id.content_tv);
             mContentTv.setText(TextUtils.isEmpty(mContentStr) ? "" : mContentStr);
             mContentTv.setTextColor(mContentStrColor == 0 ? CONTENT_DEFAULT_COLOR : mContentStrColor);
             mContentTv.setTextSize(mContentStrSize);
             mContentTv.setBackgroundColor(mContentBgColor == 0 ? DEFAULT_COLOR : mContentBgColor);
-
-            // 底部
-            mBottomBtn = (AppCompatButton) findViewById(R.id.content_bottom_btn);
-            mBottomBtn.setText(TextUtils.isEmpty(mBottomBtnStr) ? "" : mBottomBtnStr);
-            mBottomBtn.setVisibility(TextUtils.isEmpty(mBottomBtnStr) ? View.GONE : View.VISIBLE);
-            mBottomBtn.setTextColor(mBottomBtnStrColor == 0 ? DEFAULT_COLOR : mBottomBtnStrColor);
-            mBottomBtn.setTextSize(mBottomBtnStrSize);
-            mBottomBtn.setBackgroundColor(mBottomBgColor == 0 ? BOTTOM_BACKGROUND_DEFAULT_COLOR : mBottomBgColor);
-            mBottomBtn.setTag(mOnClickListener != null ? TAG_BOTTOM : DEFAULT_CLICK_TAG);
-            mBottomBtn.setOnClickListener(this);
-        } else if (mCustomLayout != null) {
-            mCustomLayout.customLayout(LayoutInflater.from(context).inflate(mLayoutRes, mContentContainer));
+        } else if (mCustomLayout != null && inflateCustomView(mLayoutRes) != null) {
+            mCustomLayout.customLayout(inflateCustomView(mLayoutRes));
         } else {
-            LayoutInflater.from(context).inflate(mLayoutRes, mContentContainer);
+            inflateCustomView(mLayoutRes);
         }
 
         // 公共部分
@@ -340,6 +332,18 @@ public class ContentView extends BaseView implements View.OnClickListener{
         mLeftBtn.setTag(mOnClickListener != null ? TAG_LEFT : DEFAULT_CLICK_TAG);
         if (!TextUtils.isEmpty(mLeftBtnStr)) {
             mLeftBtn.setOnClickListener(this);
+        }
+
+        // 底部
+        mBottomBtn = (AppCompatButton) findViewById(R.id.content_bottom_btn);
+        mBottomBtn.setText(TextUtils.isEmpty(mBottomBtnStr) ? "" : mBottomBtnStr);
+        mBottomBtn.setVisibility(TextUtils.isEmpty(mBottomBtnStr) ? View.GONE : View.VISIBLE);
+        mBottomBtn.setTextColor(mBottomBtnStrColor == 0 ? DEFAULT_COLOR : mBottomBtnStrColor);
+        mBottomBtn.setTextSize(mBottomBtnStrSize);
+        mBottomBtn.setBackgroundColor(mBottomBgColor == 0 ? BOTTOM_BACKGROUND_DEFAULT_COLOR : mBottomBgColor);
+        mBottomBtn.setTag(mOnClickListener != null ? TAG_BOTTOM : DEFAULT_CLICK_TAG);
+        if (!TextUtils.isEmpty(mBottomBtnStr)) {
+            mBottomBtn.setOnClickListener(this);
         }
 
         setOutSideCancelable(mCancelable);

@@ -7,5 +7,5 @@ package com.wufanguitar.variousview.semi.listener;
  */
 
 public interface OnCancelListerner {
-    void onCancel();
+    void onCancel(Object o);
 }

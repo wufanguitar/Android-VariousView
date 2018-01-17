@@ -20,7 +20,6 @@ import com.wufanguitar.variousview.semi.listener.OnCancelListerner;
 import com.wufanguitar.variousview.semi.listener.OnDismissListener;
 import com.wufanguitar.variousview.semi.utils.PickerViewAnimateUtil;
 
-
 /**
  * @Author: Frank Wu
  * @Email: wu.fanguitar@163.com
@@ -41,13 +40,15 @@ public class BaseView {
     );
 
     private Context mContext;
-    protected ViewGroup mContentContainer;
-    // 显示 semi view 的根View，默认是 activity 的根view
+
+    // 默认是 activity 的根view
     protected ViewGroup mDecorView;
     // 附加 View 的根View
     private ViewGroup mRootView;
     // 附加 Dialog 的根View
     private ViewGroup mDialogView;
+    // 自定义布局生成的view所在的根View
+    protected ViewGroup mContentContainer;
 
     private OnDismissListener mOnDismissListener;
     private OnCancelListerner mOnCancelListerner;
@@ -55,6 +56,12 @@ public class BaseView {
 
     private Animation mOutAnim;
     private Animation mInAnim;
+    // 是否需要进入动画，默认为true
+    // 如果不需要退出动画，直接使用dismissImmediately()方法
+    private boolean mIsInAnim = true;
+    // 是否需要退出和进入动画，默认为true
+    private boolean mIsAnim = true;
+
     private boolean mIsShowing;
     private int mGravity = Gravity.BOTTOM;
 
@@ -63,8 +70,6 @@ public class BaseView {
     private boolean mIsCancelable;
     // 是通过哪个 View 弹出的
     protected View mClickView;
-
-    private boolean mIsAnim = true;
 
     public BaseView(Context context) {
         this.mContext = context;
@@ -121,18 +126,26 @@ public class BaseView {
     protected void initEvents() {
     }
 
+    public View inflateCustomView(int layoutRes) {
+        if (mContext != null && mContentContainer != null) {
+            mContentContainer.removeAllViews();
+            return LayoutInflater.from(mContext).inflate(layoutRes, mContentContainer);
+        }
+        return null;
+    }
+
     /**
      * @param view: 是通过哪个View弹出的
-     * @param isAnim: 是否显示动画效果
+     * @param isInAnim: 是否显示进入动画效果
      */
-    public void show(View view, boolean isAnim) {
+    public void show(View view, boolean isInAnim) {
         this.mClickView = view;
-        this.mIsAnim = isAnim;
+        this.mIsInAnim = isInAnim;
         show();
     }
 
-    public void show(boolean isAnim) {
-        this.mIsAnim = isAnim;
+    public void show(boolean isInAnim) {
+        this.mIsInAnim = isInAnim;
         show();
     }
 
@@ -162,7 +175,7 @@ public class BaseView {
      */
     protected void onAttached(View view) {
         mDecorView.addView(view);
-        if (mIsAnim) {
+        if (mIsAnim && mIsInAnim) {
             mContentContainer.startAnimation(mInAnim);
         }
     }
@@ -224,9 +237,9 @@ public class BaseView {
         });
     }
 
-    public void cancel() {
+    public void cancel(Object o) {
         if (mOnCancelListerner != null) {
-            mOnCancelListerner.onCancel();
+            mOnCancelListerner.onCancel(o);
         }
     }
 
@@ -273,7 +286,7 @@ public class BaseView {
             if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == MotionEvent.ACTION_DOWN
                     && isShowing()) {
                 dismiss();
-                cancel();
+                cancel(KeyEvent.KEYCODE_BACK);
                 return true;
             }
             return false;
@@ -349,5 +362,13 @@ public class BaseView {
 
     public boolean isDialog() {
         return false;
+    }
+
+    public View getClickView() {
+        return mClickView;
+    }
+
+    public View getContentContainer() {
+        return mContentContainer;
     }
 }

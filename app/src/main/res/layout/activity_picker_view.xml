@@ -85,6 +85,22 @@
                 android:layout_margin="10dp"
                 android:text="@string/content_view_default" />
 
+            <Button
+                android:id="@+id/btn_Content_edit"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/tvTime"
+                android:layout_margin="10dp"
+                android:text="@string/content_view_rejects" />
+
+            <Button
+                android:id="@+id/btn_Content_back"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/tvTime"
+                android:layout_margin="10dp"
+                android:text="@string/content_view_back_prestep" />
+
         </LinearLayout>
 
     </ScrollView>
