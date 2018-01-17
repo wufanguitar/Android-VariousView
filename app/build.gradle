@@ -25,4 +25,5 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.code.gson:gson:2.8.2'
     compile project(':variousview')
+//    compile 'com.github.wufanguitar:Android-VariousView:1.0.2'
 }
