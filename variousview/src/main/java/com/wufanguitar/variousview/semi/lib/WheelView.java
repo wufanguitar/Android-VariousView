@@ -158,12 +158,12 @@ public class WheelView extends View {
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.wufangutiar, 0, 0);
-            mGravity = a.getInt(R.styleable.wufangutiar_pickerview_gravity, Gravity.CENTER);
-            mOutTextColor = a.getColor(R.styleable.wufangutiar_pickerview_outTextColor, mOutTextColor);
-            mCenterTextColor = a.getColor(R.styleable.wufangutiar_pickerview_centerTextColor, mCenterTextColor);
-            mDividerColor = a.getColor(R.styleable.wufangutiar_pickerview_dividerColor, mDividerColor);
-            mTextSize = a.getDimensionPixelOffset(R.styleable.wufangutiar_pickerview_textSize, mTextSize);
-            mLineSpacingMultiplier = a.getFloat(R.styleable.wufangutiar_pickerview_lineSpacingMultiplier, mLineSpacingMultiplier);
+            mGravity = a.getInt(R.styleable.wufangutiar_wheel_view_gravity, Gravity.CENTER);
+            mOutTextColor = a.getColor(R.styleable.wufangutiar_wheel_view_outTextColor, mOutTextColor);
+            mCenterTextColor = a.getColor(R.styleable.wufangutiar_wheel_view_centerTextColor, mCenterTextColor);
+            mDividerColor = a.getColor(R.styleable.wufangutiar_wheel_view_dividerColor, mDividerColor);
+            mTextSize = a.getDimensionPixelOffset(R.styleable.wufangutiar_wheel_view_textSize, mTextSize);
+            mLineSpacingMultiplier = a.getFloat(R.styleable.wufangutiar_wheel_view_lineSpacingMultiplier, mLineSpacingMultiplier);
             a.recycle();
         }
 
