@@ -45,7 +45,16 @@ publish {
     website = 'https://github.com/wufanguitar/Android-VariousView'
 }
 
+
+task makeJar(type: Copy) {
+    delete 'build/libs/Wufanguitar-VariousView-1.0.0.jar'
+    from('build/intermediates/bundles/default/')
+    into('build/libs/')
+    include('classes.jar')
+    rename('classes.jar', 'Wufanguitar-VariousView-1.0.0.jar')
+}
+makeJar.dependsOn(build)
+
 dependencies {
-//    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:25.+'
 }

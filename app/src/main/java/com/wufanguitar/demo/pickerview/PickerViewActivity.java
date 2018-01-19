@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -41,10 +43,10 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<ArrayList<String>> options2Items = new ArrayList<>();
 
     /* private ArrayList<ArrayList<ArrayList<IPickerViewData>>> options3Items = new ArrayList<>(); */
-    private Button btn_Time, btn_Options, btn_CustomOptions, btn_CustomTime, btn_no_linkage, btn_to_Fragment, btn_ContentView_default, btn_ContentView_reject, btn_ContentView_back;
+    private Button btn_Time, btn_Options, btn_CustomOptions, btn_CustomTime, btn_no_linkage, btn_to_Fragment, btn_ContentView_default, btn_ContentView_reject, btn_ContentView_back, btn_approve_select;
 
     private TimePickerView pvTime, pvCustomTime, pvCustomLunar;
-    private OptionsPickerView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack;
+    private OptionsPickerView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack, pvSelectApprove;
     private ContentView cvDefault;
     private ContentView cvReject;
     private ArrayList<CardBean> cardItem = new ArrayList<>();
@@ -70,6 +72,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         initContentViewDefault();
         initContentViewReject();
         initContentViewBackToPrestep();
+        initCustomOptionSelectApprove();
 
         btn_Time = (Button) findViewById(R.id.btn_Time);
         btn_Options = (Button) findViewById(R.id.btn_Options);
@@ -80,6 +83,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_ContentView_default = (Button) findViewById(R.id.btn_Content);
         btn_ContentView_reject = (Button) findViewById(R.id.btn_Content_edit);
         btn_ContentView_back = (Button) findViewById(R.id.btn_Content_back);
+        btn_approve_select = (Button) findViewById(R.id.btn_Option_approve_select);
 
         btn_Time.setOnClickListener(this);
         btn_Options.setOnClickListener(this);
@@ -90,6 +94,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_ContentView_default.setOnClickListener(this);
         btn_ContentView_reject.setOnClickListener(this);
         btn_ContentView_back.setOnClickListener(this);
+        btn_approve_select.setOnClickListener(this);
 
         findViewById(R.id.btn_GotoJsonData).setOnClickListener(this);
         findViewById(R.id.btn_lunar).setOnClickListener(this);
@@ -419,6 +424,44 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         cvBack.setNoRelatedPicker(list, null, null);
     }
 
+    private void initCustomOptionSelectApprove() {
+        ArrayList<String> data = new ArrayList<>();
+        data.add("何爽(深圳)-heshuang01");
+        data.add("常振(北京)-changzhen");
+        data.add("刘洋(北京)-liuyang");
+        data.add("刁学禹(北京)-diaoxueyu");
+        data.add("郭毅(北京)-guoyi");
+        pvSelectApprove = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+            @Override
+            public void onOptionsSelect(int optionsFirst, int optionsSecond, int optionsThird, View view) {
+
+            }
+        }).setLayoutRes(R.layout.select_approve_layout, new ICustomLayout() {
+            @Override
+            public void customLayout(View v) {
+                AppCompatTextView left = (AppCompatTextView) v.findViewById(R.id.btn_left);
+                AppCompatTextView right = (AppCompatTextView) v.findViewById(R.id.btn_right);
+                AppCompatTextView title = (AppCompatTextView) v.findViewById(R.id.tv_title);
+                title.setText("下一节点审批人选择");
+                left.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        pvSelectApprove.dismiss();
+                    }
+                });
+                right.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        pvSelectApprove.returnData();
+                        pvSelectApprove.dismiss();
+                    }
+                });
+            }
+        }).setDividerColor(Color.WHITE)
+                .build();
+        pvSelectApprove.setNoRelatedPicker(data, null, null);
+    }
+
     private void getOptionData() {
 
         /**
@@ -481,6 +524,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
             cvReject.show();
         } else if (v.getId() == R.id.btn_Content_back) {
             cvBack.show();
+        } else if (v.getId() == R.id.btn_Option_approve_select) {
+            pvSelectApprove.show();
         }
     }
 

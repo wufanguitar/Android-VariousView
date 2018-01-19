@@ -101,6 +101,14 @@
                 android:layout_margin="10dp"
                 android:text="@string/content_view_back_prestep" />
 
+            <Button
+                android:id="@+id/btn_Option_approve_select"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/tvTime"
+                android:layout_margin="10dp"
+                android:text="选择审批人" />
+
         </LinearLayout>
 
     </ScrollView>
