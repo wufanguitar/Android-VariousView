@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -117,7 +116,7 @@ public class ContentView extends BaseView implements View.OnClickListener{
         private final int DEFAULT_TEXT_SIZE = 15;
         private final int DEFAULT_BOTTOM_TEXT_SIZE = 18;
         private final int DEFAULT_LEFT_RIGHT_BOTTON_TEXT_SIZE = 16;
-        private int mLayoutRes = R.layout.view_content_default;
+        private int mLayoutRes = R.layout.semi_content_default_layout;
         private ICustomLayout mCustomLayout;
         private OnClickListener mOnClickListener;
         private Context mContext;
@@ -291,7 +290,7 @@ public class ContentView extends BaseView implements View.OnClickListener{
         initViews(Color.TRANSPARENT);
         init();
         // 自定义部分
-        if (mCustomLayout == null && mLayoutRes == R.layout.view_content_default) {
+        if (mCustomLayout == null && mLayoutRes == R.layout.semi_content_default_layout) {
             inflateCustomView(mLayoutRes);
             // 内容
             mContentTv = (AppCompatTextView) findViewById(R.id.content_tv);

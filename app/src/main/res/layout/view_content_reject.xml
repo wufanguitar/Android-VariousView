@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <include
-        layout="@layout/include_pickerview_topbar"
+        layout="@layout/semi_topbar_default_layout"
         android:layout_width="match_parent"
         android:layout_height="47dp" />
 

@@ -173,7 +173,7 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
     public static class Builder {
         private static final int DEFAULT_TEXT_SIZE = 17;
         private static final float DEFAULT_LINE_SPACING_MULTIPLIER = 1.6F;
-        private int mLayoutRes = R.layout.view_picker_time;
+        private int mLayoutRes = R.layout.semi_time_default_layout;
         private ICustomLayout mICustomLayout;
         private Context mContext;
         private OnTimeSelectListener mTimeSelectListener;
@@ -468,7 +468,7 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
 
             // 顶部左侧
             mLeftBtn = (AppCompatButton) findViewById(R.id.btn_left);
-            mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? context.getResources().getString(R.string.pickerview_cancel) : mLeftBtnStr);
+            mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? context.getResources().getString(R.string.semi_cancel) : mLeftBtnStr);
             mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mLeftBtnStrColor);
             mLeftBtn.setTextSize(mLeftRightBtnStrSize);
             mLeftBtn.setTag(mOnClickListener != null ? TAG_LEFT : TAG_CANCEL);
@@ -476,7 +476,7 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
 
             // 顶部右侧
             mRightBtn = (AppCompatButton) findViewById(R.id.btn_right);
-            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? context.getResources().getString(R.string.pickerview_submit) : mRightBtnStr);
+            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? context.getResources().getString(R.string.semi_submit) : mRightBtnStr);
             mRightBtn.setTextColor(mRightBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mRightBtnStrColor);
             mRightBtn.setTextSize(mLeftRightBtnStrSize);
             mRightBtn.setTag(mOnClickListener != null ? TAG_RIGHT : TAG_SUBMIT);

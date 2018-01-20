@@ -5,53 +5,33 @@
     android:orientation="vertical">
 
     <include
-        layout="@layout/include_pickerview_topbar"
+        layout="@layout/semi_topbar_default_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/pickerview_topbar_height" />
+        android:layout_height="@dimen/dimen_44_dp" />
 
     <LinearLayout
-        android:id="@+id/time_picker"
+        android:id="@+id/options_picker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:orientation="horizontal">
 
         <com.wufanguitar.variousview.semi.lib.WheelView
-            android:id="@+id/year"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.96" />
-
-        <com.wufanguitar.variousview.semi.lib.WheelView
-            android:id="@+id/month"
+            android:id="@+id/option_first"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
         <com.wufanguitar.variousview.semi.lib.WheelView
-            android:id="@+id/day"
+            android:id="@+id/option_second"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
         <com.wufanguitar.variousview.semi.lib.WheelView
-            android:id="@+id/hour"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <com.wufanguitar.variousview.semi.lib.WheelView
-            android:id="@+id/min"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <com.wufanguitar.variousview.semi.lib.WheelView
-            android:id="@+id/second"
+            android:id="@+id/option_third"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
     </LinearLayout>
-
-
 </LinearLayout>

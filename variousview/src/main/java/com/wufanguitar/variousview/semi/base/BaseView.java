@@ -18,7 +18,7 @@ import android.widget.FrameLayout;
 import com.wufanguitar.variousview.R;
 import com.wufanguitar.variousview.semi.listener.OnCancelListerner;
 import com.wufanguitar.variousview.semi.listener.OnDismissListener;
-import com.wufanguitar.variousview.semi.utils.PickerViewAnimateUtil;
+import com.wufanguitar.variousview.semi.utils.SemiAnimateUtil;
 
 /**
  * @Author: Frank Wu
@@ -79,7 +79,7 @@ public class BaseView {
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         if (isDialog()) {
             // 如果是对话框模式
-            mDialogView = (ViewGroup) layoutInflater.inflate(R.layout.layout_base_view, null, false);
+            mDialogView = (ViewGroup) layoutInflater.inflate(R.layout.semi_base_view_layout, null, false);
             // 设置界面的背景为透明
             mDialogView.setBackgroundColor(Color.TRANSPARENT);
             // 这个是真正要加载时间选取器的父布局
@@ -104,7 +104,7 @@ public class BaseView {
                 mDecorView = (ViewGroup) ((Activity) mContext).getWindow().getDecorView().findViewById(android.R.id.content);
             }
             // 将控件添加到 mDecorView 中
-            mRootView = (ViewGroup) layoutInflater.inflate(R.layout.layout_base_view, mDecorView, false);
+            mRootView = (ViewGroup) layoutInflater.inflate(R.layout.semi_base_view_layout, mDecorView, false);
             mRootView.setLayoutParams(new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
             ));
@@ -244,12 +244,12 @@ public class BaseView {
     }
 
     public Animation getInAnimation() {
-        int res = PickerViewAnimateUtil.getAnimationResource(this.mGravity, true);
+        int res = SemiAnimateUtil.getAnimationResource(this.mGravity, true);
         return AnimationUtils.loadAnimation(mContext, res);
     }
 
     public Animation getOutAnimation() {
-        int res = PickerViewAnimateUtil.getAnimationResource(this.mGravity, false);
+        int res = SemiAnimateUtil.getAnimationResource(this.mGravity, false);
         return AnimationUtils.loadAnimation(mContext, res);
     }
 
@@ -332,11 +332,11 @@ public class BaseView {
 
     public void createDialog() {
         if (mDialogView != null) {
-            mDialog = new Dialog(mContext, R.style.custom_dialog);
+            mDialog = new Dialog(mContext, R.style.semi_custom_dialog);
             // 不能点外面取消，也不能点 back 取消
             mDialog.setCancelable(mIsCancelable);
             mDialog.setContentView(mDialogView);
-            mDialog.getWindow().setWindowAnimations(R.style.pickerview_dialog_animation);
+            mDialog.getWindow().setWindowAnimations(R.style.semi_dialog_animation);
             mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {

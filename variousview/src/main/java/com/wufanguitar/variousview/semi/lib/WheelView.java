@@ -139,7 +139,7 @@ public class WheelView extends View {
     public WheelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         // 默认大小
-        mTextSize = getResources().getDimensionPixelSize(R.dimen.pickerview_textsize);
+        mTextSize = getResources().getDimensionPixelSize(R.dimen.dimen_20_sp);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         // 屏幕密度比（0.75/1.0/1.5/2.0/3.0）
         float density = dm.density;

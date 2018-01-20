@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:gravity="left|center_vertical"
         android:paddingLeft="20dp"
-        android:text="@string/pickerview_cancel"
+        android:text="@string/semi_cancel"
         android:textColor="#fb3353"
         android:textSize="14sp" />
 
@@ -22,7 +22,6 @@
         android:layout_toLeftOf="@+id/btn_right"
         android:layout_toRightOf="@+id/btn_left"
         android:gravity="center"
-        android:textColor="@color/pickerview_topbar_title"
         android:textSize="18sp" />
 
     <android.support.v7.widget.AppCompatTextView
@@ -32,8 +31,8 @@
         android:layout_alignParentRight="true"
         android:background="@android:color/transparent"
         android:gravity="right|center_vertical"
-        android:paddingRight="@dimen/pickerview_topbar_padding"
-        android:text="@string/pickerview_submit"
+        android:paddingRight="@dimen/dimen_20_dp"
+        android:text="@string/semi_submit"
         android:textColor="#fb3353"
         android:textSize="14sp" />
 

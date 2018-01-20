@@ -5,9 +5,9 @@
     android:orientation="vertical">
 
     <include
-        layout="@layout/include_pickerview_topbar"
+        layout="@layout/semi_topbar_default_layout"
         android:layout_width="match_parent"
-        android:layout_height="47dp" />
+        android:layout_height="@dimen/dimen_44_dp" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/content_tv"
@@ -19,6 +19,6 @@
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/content_bottom_btn"
         android:layout_width="match_parent"
-        android:layout_height="47dp"
-        android:text="关闭" />
+        android:layout_height="@dimen/dimen_44_dp"
+        android:gravity="center" />
 </LinearLayout>
