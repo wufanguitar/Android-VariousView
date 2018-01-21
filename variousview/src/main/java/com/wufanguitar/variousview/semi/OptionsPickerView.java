@@ -45,7 +45,7 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
     private OnOptionsSelectListener mOptionsSelectListener;
 
     // 顶部左侧/右侧按钮
-    private AppCompatButton mLeftBtn, mRightBtn;
+    private AppCompatTextView mLeftBtn, mRightBtn;
     // 顶部左侧按钮文字
     private String mLeftBtnStr;
     // 顶部左侧按钮文字颜色
@@ -440,23 +440,23 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
             // 顶部标题
             mTopBarRL = (RelativeLayout) findViewById(R.id.rl_topbar);
             mTopBarRL.setBackgroundColor(mTopBarBgColor == 0 ? DEFAULT_TOPBAR_BACKGROUND_COLOR : mTopBarBgColor);
-            mTitleTv = (AppCompatTextView) findViewById(R.id.tv_title);
+            mTitleTv = (AppCompatTextView) findViewById(R.id.title);
             mTitleTv.setTextSize(mTitleStrSize);
             mTitleTv.setText(TextUtils.isEmpty(mTitleStr) ? "" : mTitleStr); // 默认为空
             mTitleTv.setTextColor(mTitleStrColor == 0 ? DEFAULT_TOPBAR_TITLE_STRING_COLOR : mTitleStrColor);
 
             // 顶部左侧
-            mLeftBtn = (AppCompatButton) findViewById(R.id.btn_left);
+            mLeftBtn = (AppCompatTextView) findViewById(R.id.left);
             mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ?
-                    context.getResources().getString(R.string.semi_cancel) : mLeftBtnStr);
+                    context.getResources().getString(R.string.cancel) : mLeftBtnStr);
             mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mLeftBtnStrColor);
             mLeftBtn.setTextSize(mLeftRightBtnStrSize);
             mLeftBtn.setTag(mOnClickListener != null ? TAG_LEFT : TAG_CANCEL);
             mLeftBtn.setOnClickListener(this);
 
             // 顶部右侧按钮
-            mRightBtn = (AppCompatButton) findViewById(R.id.btn_right);
-            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? context.getResources().getString(R.string.semi_submit) : mRightBtnStr);
+            mRightBtn = (AppCompatTextView) findViewById(R.id.right);
+            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? context.getResources().getString(R.string.submit) : mRightBtnStr);
             mRightBtn.setTextColor(mRightBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mRightBtnStrColor);
             mRightBtn.setTextSize(mLeftRightBtnStrSize);
             mRightBtn.setTag(mOnClickListener != null ? TAG_RIGHT : TAG_SUBMIT);
@@ -466,7 +466,7 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
         }
 
         // 滚轮布局
-        final LinearLayout optionsPicker = (LinearLayout) findViewById(R.id.options_picker);
+        final LinearLayout optionsPicker = (LinearLayout) findViewById(R.id.wheel_option);
         optionsPicker.setBackgroundColor(mWheelViewBgColor == 0 ? DEFAULT_WHEEL_VIEW_BACKGROUND_COLOR : mWheelViewBgColor);
 
         mWheelOptions = new WheelOptions(optionsPicker, mLinkage);
@@ -545,7 +545,7 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
         switch (tag) {
             case TAG_LEFT:
                 if (mOnClickListener != null) {
-                    mOnClickListener.onLeftClick(this, v);
+                    mOnClickListener.onLeftClick(mContentContainer);
                 }
                 break;
             case TAG_CANCEL:
@@ -554,7 +554,7 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
                 break;
             case TAG_RIGHT:
                 if (mOnClickListener != null) {
-                    mOnClickListener.onRightClick(this, v);
+                    mOnClickListener.onRightClick(mContentContainer);
                 }
                 break;
             case TAG_SUBMIT:
@@ -583,9 +583,9 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
 
     public interface OnClickListener {
         // 左按钮点击事件
-        void onLeftClick(OptionsPickerView pickerView, View view);
+        void onLeftClick(View view);
 
         // 右按钮点击事件
-        void onRightClick(OptionsPickerView pickerView, View view);
+        void onRightClick(View view);
     }
 }

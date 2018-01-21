@@ -10,15 +10,17 @@
         android:layout_height="@dimen/dimen_44_dp" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/content_tv"
+        android:id="@+id/tv_content"
         android:layout_width="match_parent"
         android:layout_height="116dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp" />
 
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/content_bottom_btn"
+    <!-- 此部分需要完整复制过去，删减或者更改ID会导致初始化找不到内容而报空 -->
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/bottom"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_44_dp"
+        android:background="@android:color/black"
         android:gravity="center" />
 </LinearLayout>

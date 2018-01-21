@@ -54,7 +54,7 @@
 
     <!--此部分需要完整复制过去，删减或者更改ID会导致初始化找不到内容而报空-->
     <LinearLayout
-        android:id="@+id/time_picker"
+        android:id="@+id/wheel_time"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -85,7 +85,7 @@
             android:layout_weight="1.1" />
 
         <com.wufanguitar.variousview.semi.lib.WheelView
-            android:id="@+id/min"
+            android:id="@+id/minute"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1.1" />

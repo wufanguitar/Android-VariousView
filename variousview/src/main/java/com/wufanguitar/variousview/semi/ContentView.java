@@ -22,7 +22,6 @@ public class ContentView extends BaseView implements View.OnClickListener{
     private static final int DEFAULT_COLOR = 0xFFFFFFFF;
     private static final int TITLE_DEFAULT_COLOR = 0xdd888888;
     private static final int CONTENT_DEFAULT_COLOR = 0xdd666666;
-    private static final int BOTTOM_BACKGROUND_DEFAULT_COLOR = 0xFFCE0000;
     private static final int SUBMIT_CANCEL_TEXT_DEFAULT_COLOR = 0xFF007AFF;
     private static final String DEFAULT_CLICK_TAG = "dismiss";
     private static final String TAG_LEFT = "left";
@@ -47,7 +46,7 @@ public class ContentView extends BaseView implements View.OnClickListener{
     private int mTitleBgColor;
 
     // 顶部左侧/右侧按钮
-    private AppCompatButton mLeftBtn, mRightBtn;
+    private AppCompatTextView mLeftBtn, mRightBtn;
     // 顶部左侧按钮文字
     private String mLeftBtnStr;
     // 顶部左侧按钮文字颜色
@@ -70,15 +69,13 @@ public class ContentView extends BaseView implements View.OnClickListener{
     private int mContentBgColor;
 
     // 底部按钮
-    private AppCompatButton mBottomBtn;
+    private AppCompatTextView mBottomBtn;
     // 底部文字
     private String mBottomBtnStr;
     // 底部文字颜色
     private int mBottomBtnStrColor;
     // 底部文字大小
     private int mBottomBtnStrSize;
-    // 底部背景颜色
-    private int mBottomBgColor;
 
     // 是否是对话框模式
     private boolean mIsDialog;
@@ -103,7 +100,6 @@ public class ContentView extends BaseView implements View.OnClickListener{
         this.mBottomBtnStr = builder.mBottomBtnStr;
         this.mBottomBtnStrColor = builder.mBottomBtnStrColor;
         this.mBottomBtnStrSize = builder.mBottomBtnStrSize;
-        this.mBottomBgColor = builder.mBottomBgColor;
         this.mCancelable = builder.mCancelable;
         this.mCustomLayout = builder.mCustomLayout;
         this.mOnClickListener = builder.mOnClickListener;
@@ -155,8 +151,6 @@ public class ContentView extends BaseView implements View.OnClickListener{
         private int mBottomBtnStrColor;
         // 底部文字大小
         private int mBottomBtnStrSize = DEFAULT_BOTTOM_TEXT_SIZE;
-        // 底部背景颜色
-        private int mBottomBgColor;
 
         // 是否能取消((默认提供关闭按钮，故此处默认为false))
         private boolean mCancelable = false;
@@ -265,11 +259,6 @@ public class ContentView extends BaseView implements View.OnClickListener{
             return this;
         }
 
-        public Builder setBottomBgColor(int bottomBgColor) {
-            this.mBottomBgColor = bottomBgColor;
-            return this;
-        }
-
         public Builder isDialog(boolean isDialog) {
             this.mIsDialog = isDialog;
             return this;
@@ -293,7 +282,7 @@ public class ContentView extends BaseView implements View.OnClickListener{
         if (mCustomLayout == null && mLayoutRes == R.layout.semi_content_default_layout) {
             inflateCustomView(mLayoutRes);
             // 内容
-            mContentTv = (AppCompatTextView) findViewById(R.id.content_tv);
+            mContentTv = (AppCompatTextView) findViewById(R.id.tv_content);
             mContentTv.setText(TextUtils.isEmpty(mContentStr) ? "" : mContentStr);
             mContentTv.setTextColor(mContentStrColor == 0 ? CONTENT_DEFAULT_COLOR : mContentStrColor);
             mContentTv.setTextSize(mContentStrSize);
@@ -307,14 +296,14 @@ public class ContentView extends BaseView implements View.OnClickListener{
         // 公共部分
         mTopBarRLayout = (RelativeLayout) findViewById(R.id.rl_topbar);
         // 顶部标题
-        mTitleTv = (AppCompatTextView) findViewById(R.id.tv_title);
+        mTitleTv = (AppCompatTextView) findViewById(R.id.title);
         mTitleTv.setText(TextUtils.isEmpty(mTitleStr) ? "" : mTitleStr);
         mTitleTv.setTextColor(mTitleStrColor == 0 ? TITLE_DEFAULT_COLOR : mTitleStrColor);
         mTitleTv.setTextSize(mTitleStrSize);
         mTopBarRLayout.setBackgroundColor(mTitleBgColor == 0 ? DEFAULT_COLOR : mTitleBgColor);
 
         // 右侧(默认确定)按钮
-        mRightBtn = (AppCompatButton) findViewById(R.id.btn_right);
+        mRightBtn = (AppCompatTextView) findViewById(R.id.right);
         mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? "" : mRightBtnStr);
         mRightBtn.setTextColor(mRightBtnStrColor == 0 ? SUBMIT_CANCEL_TEXT_DEFAULT_COLOR : mRightBtnStrColor);
         mRightBtn.setTextSize(mLeftRightBtnStrSize);
@@ -324,7 +313,7 @@ public class ContentView extends BaseView implements View.OnClickListener{
         }
 
         // 左侧(默认取消)按钮
-        mLeftBtn = (AppCompatButton) findViewById(R.id.btn_left);
+        mLeftBtn = (AppCompatTextView) findViewById(R.id.left);
         mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? "" : mLeftBtnStr);
         mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? SUBMIT_CANCEL_TEXT_DEFAULT_COLOR : mLeftBtnStrColor);
         mLeftBtn.setTextSize(mLeftRightBtnStrSize);
@@ -334,12 +323,11 @@ public class ContentView extends BaseView implements View.OnClickListener{
         }
 
         // 底部
-        mBottomBtn = (AppCompatButton) findViewById(R.id.content_bottom_btn);
+        mBottomBtn = (AppCompatTextView) findViewById(R.id.bottom);
         mBottomBtn.setText(TextUtils.isEmpty(mBottomBtnStr) ? "" : mBottomBtnStr);
         mBottomBtn.setVisibility(TextUtils.isEmpty(mBottomBtnStr) ? View.GONE : View.VISIBLE);
         mBottomBtn.setTextColor(mBottomBtnStrColor == 0 ? DEFAULT_COLOR : mBottomBtnStrColor);
         mBottomBtn.setTextSize(mBottomBtnStrSize);
-        mBottomBtn.setBackgroundColor(mBottomBgColor == 0 ? BOTTOM_BACKGROUND_DEFAULT_COLOR : mBottomBgColor);
         mBottomBtn.setTag(mOnClickListener != null ? TAG_BOTTOM : DEFAULT_CLICK_TAG);
         if (!TextUtils.isEmpty(mBottomBtnStr)) {
             mBottomBtn.setOnClickListener(this);
@@ -359,17 +347,17 @@ public class ContentView extends BaseView implements View.OnClickListener{
         switch (tag) {
             case TAG_LEFT:
                 if (mOnClickListener != null) {
-                    mOnClickListener.onLeftClick(this, v);
+                    mOnClickListener.onLeftClick(mContentContainer);
                 }
                 break;
             case TAG_RIGHT:
                 if (mOnClickListener != null) {
-                    mOnClickListener.onRightClick(this, v);
+                    mOnClickListener.onRightClick(mContentContainer);
                 }
                 break;
             case TAG_BOTTOM:
                 if (mOnClickListener != null) {
-                    mOnClickListener.onBottomClick(this, v);
+                    mOnClickListener.onBottomClick(mContentContainer);
                 }
                 break;
             case DEFAULT_CLICK_TAG:
@@ -382,10 +370,10 @@ public class ContentView extends BaseView implements View.OnClickListener{
 
     public interface OnClickListener {
         // 左按钮点击事件
-        void onLeftClick(ContentView pickerView, View view);
+        void onLeftClick(View view);
         // 右按钮点击事件
-        void onRightClick(ContentView pickerView, View view);
+        void onRightClick(View view);
         // 底部按钮点击事件
-        void onBottomClick(ContentView pickerView, View view);
+        void onBottomClick(View view);
     }
 }

@@ -44,7 +44,7 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
     protected WheelTime mWheelTime;
 
     // 顶部左侧/右侧按钮
-    private AppCompatButton mLeftBtn, mRightBtn;
+    private AppCompatTextView mLeftBtn, mRightBtn;
     // 顶部左侧按钮文字
     private String mLeftBtnStr;
     // 顶部左侧按钮文字颜色
@@ -461,22 +461,22 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
             // 顶部标题
             mTopBarRL = (RelativeLayout) findViewById(R.id.rl_topbar);
             mTopBarRL.setBackgroundColor(mTopBarBgColor == 0 ? DEFAULT_TOPBAR_BACKGROUND_COLOR : mTopBarBgColor);
-            mTitleTv = (AppCompatTextView) findViewById(R.id.tv_title);
+            mTitleTv = (AppCompatTextView) findViewById(R.id.title);
             mTitleTv.setText(TextUtils.isEmpty(mTitleStr) ? "" : mTitleStr);
             mTitleTv.setTextColor(mTitleStrColor == 0 ? DEFAULT_TOPBAR_TITLE_STRING_COLOR : mTitleStrColor);
             mTitleTv.setTextSize(mTitleStrSize);
 
             // 顶部左侧
-            mLeftBtn = (AppCompatButton) findViewById(R.id.btn_left);
-            mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? context.getResources().getString(R.string.semi_cancel) : mLeftBtnStr);
+            mLeftBtn = (AppCompatTextView) findViewById(R.id.left);
+            mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? context.getResources().getString(R.string.cancel) : mLeftBtnStr);
             mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mLeftBtnStrColor);
             mLeftBtn.setTextSize(mLeftRightBtnStrSize);
             mLeftBtn.setTag(mOnClickListener != null ? TAG_LEFT : TAG_CANCEL);
             mLeftBtn.setOnClickListener(this);
 
             // 顶部右侧
-            mRightBtn = (AppCompatButton) findViewById(R.id.btn_right);
-            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? context.getResources().getString(R.string.semi_submit) : mRightBtnStr);
+            mRightBtn = (AppCompatTextView) findViewById(R.id.right);
+            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? context.getResources().getString(R.string.submit) : mRightBtnStr);
             mRightBtn.setTextColor(mRightBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mRightBtnStrColor);
             mRightBtn.setTextSize(mLeftRightBtnStrSize);
             mRightBtn.setTag(mOnClickListener != null ? TAG_RIGHT : TAG_SUBMIT);
@@ -486,7 +486,7 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
         }
 
         // 时间转轮 自定义控件
-        LinearLayout timePickerView = (LinearLayout) findViewById(R.id.time_picker);
+        LinearLayout timePickerView = (LinearLayout) findViewById(R.id.wheel_time);
 
         timePickerView.setBackgroundColor(mWheelViewBgColor == 0 ? DEFAULT_WHEEL_VIEW_BACKGROUND_COLOR : mWheelViewBgColor);
 
@@ -590,7 +590,7 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
         switch (tag) {
             case TAG_LEFT:
                 if (mOnClickListener != null) {
-                    mOnClickListener.onLeftClick(this, v);
+                    mOnClickListener.onLeftClick(mContentContainer);
                 }
                 break;
             case TAG_CANCEL:
@@ -599,7 +599,7 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
                 break;
             case TAG_RIGHT:
                 if (mOnClickListener != null) {
-                    mOnClickListener.onRightClick(this, v);
+                    mOnClickListener.onRightClick(mContentContainer);
                 }
                 break;
             case TAG_SUBMIT:
@@ -656,9 +656,9 @@ public class TimePickerView extends BaseView implements View.OnClickListener {
 
     public interface OnClickListener {
         // 左按钮点击事件
-        void onLeftClick(TimePickerView pickerView, View view);
+        void onLeftClick(View view);
 
         // 右按钮点击事件
-        void onRightClick(TimePickerView pickerView, View view);
+        void onRightClick(View view);
     }
 }

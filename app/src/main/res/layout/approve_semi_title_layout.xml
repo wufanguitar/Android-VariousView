@@ -1,45 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_topbar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:background="@color/color_white_ffffff">
 
     <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/btn_left"
+        android:id="@+id/left"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="left|center_vertical"
         android:paddingLeft="20dp"
-        android:text="@string/semi_cancel"
-        android:textColor="#fb3353"
+        android:text="@string/cancel"
+        android:textColor="@color/color_red_fb3353"
         android:textSize="14sp" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/tv_title"
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/btn_right"
-        android:layout_toRightOf="@+id/btn_left"
+        android:layout_centerInParent="true"
         android:gravity="center"
+        android:text="下一节点审批人选择"
+        android:textColor="@color/color_back_000000"
         android:textSize="18sp" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:id="@id/btn_right"
+        android:id="@+id/right"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:background="@android:color/transparent"
         android:gravity="right|center_vertical"
-        android:paddingRight="@dimen/dimen_20_dp"
-        android:text="@string/semi_submit"
-        android:textColor="#fb3353"
+        android:paddingRight="20dp"
+        android:text="@string/submit"
+        android:textColor="@color/color_red_fb3353"
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/title_line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_alignParentBottom="true"
-        android:background="#f2f2f2" />
+        android:background="@color/color_white_f2f2f2" />
 </RelativeLayout>

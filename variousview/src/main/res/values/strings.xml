@@ -1,10 +1,10 @@
 <resources>
-    <string name="semi_cancel">取消</string>
-    <string name="semi_submit">确定</string>
-    <string name="semi_year">年</string>
-    <string name="semi_month">月</string>
-    <string name="semi_day">日</string>
-    <string name="semi_hours">时</string>
-    <string name="semi_minutes">分</string>
-    <string name="semi_seconds">秒</string>
+    <string name="cancel">取消</string>
+    <string name="submit">确定</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
+    <string name="hour">时</string>
+    <string name="minute">分</string>
+    <string name="second">秒</string>
 </resources>

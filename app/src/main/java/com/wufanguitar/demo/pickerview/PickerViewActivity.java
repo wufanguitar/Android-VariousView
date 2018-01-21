@@ -43,12 +43,13 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<ArrayList<String>> options2Items = new ArrayList<>();
 
     /* private ArrayList<ArrayList<ArrayList<IPickerViewData>>> options3Items = new ArrayList<>(); */
-    private Button btn_Time, btn_Options, btn_CustomOptions, btn_CustomTime, btn_no_linkage, btn_to_Fragment, btn_ContentView_default, btn_ContentView_reject, btn_ContentView_back, btn_approve_select;
+    private Button btn_Time, btn_Options, btn_CustomOptions, btn_CustomTime, btn_no_linkage, btn_to_Fragment, btn_ContentView_default,
+            btn_ContentView_reject, btn_ContentView_back, btn_approve_select, btn_reject_approve_comment;
 
     private TimePickerView pvTime, pvCustomTime, pvCustomLunar;
     private OptionsPickerView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack, pvSelectApprove;
     private ContentView cvDefault;
-    private ContentView cvReject;
+    private ContentView cvReject, cvRejectApproveComment;
     private ArrayList<CardBean> cardItem = new ArrayList<>();
 
     private ArrayList<String> food = new ArrayList<>();
@@ -73,6 +74,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         initContentViewReject();
         initContentViewBackToPrestep();
         initCustomOptionSelectApprove();
+        initRejectToApproveComment();
 
         btn_Time = (Button) findViewById(R.id.btn_Time);
         btn_Options = (Button) findViewById(R.id.btn_Options);
@@ -84,6 +86,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_ContentView_reject = (Button) findViewById(R.id.btn_Content_edit);
         btn_ContentView_back = (Button) findViewById(R.id.btn_Content_back);
         btn_approve_select = (Button) findViewById(R.id.btn_Option_approve_select);
+        btn_reject_approve_comment = (Button) findViewById(R.id.btn_reject_approve_comment);
 
         btn_Time.setOnClickListener(this);
         btn_Options.setOnClickListener(this);
@@ -95,6 +98,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_ContentView_reject.setOnClickListener(this);
         btn_ContentView_back.setOnClickListener(this);
         btn_approve_select.setOnClickListener(this);
+        btn_reject_approve_comment.setOnClickListener(this);
 
         findViewById(R.id.btn_GotoJsonData).setOnClickListener(this);
         findViewById(R.id.btn_lunar).setOnClickListener(this);
@@ -149,7 +153,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                      * 公农历切换后调整宽
                      */
                     private void setTimePickerChildWeight(View v, float yearWeight, float weight) {
-                        ViewGroup timepicker = (ViewGroup) v.findViewById(R.id.time_picker);
+                        ViewGroup timepicker = (ViewGroup) v.findViewById(R.id.time);
                         View year = timepicker.getChildAt(0);
                         LinearLayout.LayoutParams lp = ((LinearLayout.LayoutParams) year.getLayoutParams());
                         lp.weight = yearWeight;
@@ -398,7 +402,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                         .setBottomBtnStr("确认驳回")
                         .setOnClickListener(new ContentView.OnClickListener() {
                             @Override
-                            public void onLeftClick(ContentView pickerView, View view) {
+                            public void onLeftClick(View view) {
                                 cvReject.dismissImmediately();
                                 if (cvBack != null) {
                                     cvBack.show(false);
@@ -406,12 +410,12 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                             }
 
                             @Override
-                            public void onRightClick(ContentView pickerView, View view) {
+                            public void onRightClick(View view) {
                                 cvReject.dismiss();
                             }
 
                             @Override
-                            public void onBottomClick(ContentView pickerView, View view) {
+                            public void onBottomClick(View view) {
                                 cvReject.dismiss();
                             }
                         })
@@ -439,9 +443,9 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         }).setLayoutRes(R.layout.select_approve_layout, new ICustomLayout() {
             @Override
             public void customLayout(View v) {
-                AppCompatTextView left = (AppCompatTextView) v.findViewById(R.id.btn_left);
-                AppCompatTextView right = (AppCompatTextView) v.findViewById(R.id.btn_right);
-                AppCompatTextView title = (AppCompatTextView) v.findViewById(R.id.tv_title);
+                AppCompatTextView left = (AppCompatTextView) v.findViewById(R.id.left);
+                AppCompatTextView right = (AppCompatTextView) v.findViewById(R.id.right);
+                AppCompatTextView title = (AppCompatTextView) v.findViewById(R.id.title);
                 title.setText("下一节点审批人选择");
                 left.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -460,6 +464,19 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         }).setDividerColor(Color.WHITE)
                 .build();
         pvSelectApprove.setNoRelatedPicker(data, null, null);
+    }
+
+    public void initRejectToApproveComment() {
+        cvRejectApproveComment = new ContentView.Builder(this)
+                .setLayoutRes(R.layout.reject_approve_comment_layout, new ICustomLayout() {
+                    @Override
+                    public void customLayout(View v) {
+
+                    }
+                }).setTitleStr("驳回审核备注")
+                .setRightBtnStr("关闭")
+                .setBottomBtnStr("确认驳回")
+        .build();
     }
 
     private void getOptionData() {
@@ -526,6 +543,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
             cvBack.show();
         } else if (v.getId() == R.id.btn_Option_approve_select) {
             pvSelectApprove.show();
+        } else if (v.getId() == R.id.btn_reject_approve_comment) {
+            cvRejectApproveComment.show();
         }
     }
 

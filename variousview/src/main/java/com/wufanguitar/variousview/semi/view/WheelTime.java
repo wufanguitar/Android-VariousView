@@ -137,7 +137,7 @@ public class WheelTime {
         mHourWheelView.setCurrentItem(hour);
         mHourWheelView.setGravity(mGravity);
 
-        mMinuteWheelView = (WheelView) mView.findViewById(R.id.min);
+        mMinuteWheelView = (WheelView) mView.findViewById(R.id.minute);
         mMinuteWheelView.setAdapter(new NumericWheelAdapter(0, 59));
         mMinuteWheelView.setCurrentItem(minute);
         mMinuteWheelView.setGravity(mGravity);
@@ -357,7 +357,7 @@ public class WheelTime {
         mHourWheelView.setCurrentItem(hour);
         mHourWheelView.setGravity(mGravity);
         // 分
-        mMinuteWheelView = (WheelView) mView.findViewById(R.id.min);
+        mMinuteWheelView = (WheelView) mView.findViewById(R.id.minute);
         mMinuteWheelView.setAdapter(new NumericWheelAdapter(0, 59));
         mMinuteWheelView.setCurrentItem(minute);
         mMinuteWheelView.setGravity(mGravity);
@@ -583,39 +583,39 @@ public class WheelTime {
         mSecondWheelView.setLineSpacingMultiplier(mLineSpacingMultiplier);
     }
 
-    public void setLabels(String label_year, String label_month, String label_day, String label_hours, String label_mins, String label_seconds) {
+    public void setLabels(String label_year, String label_month, String label_day, String label_hour, String label_min, String label_second) {
         if (mIsLunarCalendar) {
             return;
         }
         if (label_year != null) {
             mYearWheelView.setLabel(label_year);
         } else {
-            mYearWheelView.setLabel(mView.getContext().getString(R.string.semi_year));
+            mYearWheelView.setLabel(mView.getContext().getString(R.string.year));
         }
         if (label_month != null) {
             mMonthWheelView.setLabel(label_month);
         } else {
-            mMonthWheelView.setLabel(mView.getContext().getString(R.string.semi_month));
+            mMonthWheelView.setLabel(mView.getContext().getString(R.string.month));
         }
         if (label_day != null) {
             mDayWheelView.setLabel(label_day);
         } else {
-            mDayWheelView.setLabel(mView.getContext().getString(R.string.semi_day));
+            mDayWheelView.setLabel(mView.getContext().getString(R.string.day));
         }
-        if (label_hours != null) {
-            mHourWheelView.setLabel(label_hours);
+        if (label_hour != null) {
+            mHourWheelView.setLabel(label_hour);
         } else {
-            mHourWheelView.setLabel(mView.getContext().getString(R.string.semi_hours));
+            mHourWheelView.setLabel(mView.getContext().getString(R.string.hour));
         }
-        if (label_mins != null) {
-            mMinuteWheelView.setLabel(label_mins);
+        if (label_min != null) {
+            mMinuteWheelView.setLabel(label_min);
         } else {
-            mMinuteWheelView.setLabel(mView.getContext().getString(R.string.semi_minutes));
+            mMinuteWheelView.setLabel(mView.getContext().getString(R.string.minute));
         }
-        if (label_seconds != null) {
-            mSecondWheelView.setLabel(label_seconds);
+        if (label_second != null) {
+            mSecondWheelView.setLabel(label_second);
         } else {
-            mSecondWheelView.setLabel(mView.getContext().getString(R.string.semi_seconds));
+            mSecondWheelView.setLabel(mView.getContext().getString(R.string.second));
         }
     }
 
