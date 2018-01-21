@@ -116,6 +116,14 @@
                 android:layout_below="@+id/tvTime"
                 android:layout_margin="10dp"
                 android:text="返回审核备注" />
+
+            <Button
+                android:id="@+id/btn_show_loading"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/tvTime"
+                android:layout_margin="10dp"
+                android:text="加载动画" />
         </LinearLayout>
 
     </ScrollView>

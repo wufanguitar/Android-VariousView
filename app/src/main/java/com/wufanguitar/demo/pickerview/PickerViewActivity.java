@@ -9,9 +9,14 @@ import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,12 +49,12 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
 
     /* private ArrayList<ArrayList<ArrayList<IPickerViewData>>> options3Items = new ArrayList<>(); */
     private Button btn_Time, btn_Options, btn_CustomOptions, btn_CustomTime, btn_no_linkage, btn_to_Fragment, btn_ContentView_default,
-            btn_ContentView_reject, btn_ContentView_back, btn_approve_select, btn_reject_approve_comment;
+            btn_ContentView_reject, btn_ContentView_back, btn_approve_select, btn_reject_approve_comment, btn_show_loading;
 
     private TimePickerView pvTime, pvCustomTime, pvCustomLunar;
     private OptionsPickerView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack, pvSelectApprove;
     private ContentView cvDefault;
-    private ContentView cvReject, cvRejectApproveComment;
+    private ContentView cvReject, cvRejectApproveComment, cvLoading;
     private ArrayList<CardBean> cardItem = new ArrayList<>();
 
     private ArrayList<String> food = new ArrayList<>();
@@ -75,6 +80,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         initContentViewBackToPrestep();
         initCustomOptionSelectApprove();
         initRejectToApproveComment();
+        initShowLoadingDialog();
+
 
         btn_Time = (Button) findViewById(R.id.btn_Time);
         btn_Options = (Button) findViewById(R.id.btn_Options);
@@ -87,6 +94,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_ContentView_back = (Button) findViewById(R.id.btn_Content_back);
         btn_approve_select = (Button) findViewById(R.id.btn_Option_approve_select);
         btn_reject_approve_comment = (Button) findViewById(R.id.btn_reject_approve_comment);
+        btn_show_loading = (Button) findViewById(R.id.btn_show_loading);
 
         btn_Time.setOnClickListener(this);
         btn_Options.setOnClickListener(this);
@@ -99,6 +107,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_ContentView_back.setOnClickListener(this);
         btn_approve_select.setOnClickListener(this);
         btn_reject_approve_comment.setOnClickListener(this);
+        btn_show_loading.setOnClickListener(this);
 
         findViewById(R.id.btn_GotoJsonData).setOnClickListener(this);
         findViewById(R.id.btn_lunar).setOnClickListener(this);
@@ -479,6 +488,29 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         .build();
     }
 
+    public void initShowLoadingDialog() {
+        cvLoading = new ContentView.Builder(this).isDialog(true)
+                .setLayoutRes(R.layout.show_loading, new ICustomLayout() {
+                    @Override
+                    public void customLayout(View v) {
+                        ImageView iv = (ImageView) v.findViewById(R.id.loading_iv);
+                        RotateAnimation rotate  = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                        AccelerateInterpolator lin = new AccelerateInterpolator();
+                        rotate.setInterpolator(lin);
+                        rotate.setDuration(2000);//设置动画持续周期
+                        rotate.setRepeatCount(-1);//设置重复次数
+                        rotate.setFillAfter(true);//动画执行完后是否停留在执行完的状态
+                        rotate.setStartOffset(10);//执行前的等待时间
+                        iv.setAnimation(rotate);
+                    }
+                })
+                .build();
+        FrameLayout.LayoutParams layoutParams = cvLoading.params;
+        layoutParams.leftMargin = 48;
+        layoutParams.rightMargin = 48;
+        cvLoading.getContentContainer().setLayoutParams(layoutParams);
+    }
+
     private void getOptionData() {
 
         /**
@@ -545,6 +577,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
             pvSelectApprove.show();
         } else if (v.getId() == R.id.btn_reject_approve_comment) {
             cvRejectApproveComment.show();
+        } else if (v.getId() == R.id.btn_show_loading) {
+            cvLoading.show();
         }
     }
 

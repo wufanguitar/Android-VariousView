@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="140dp"
+    android:layout_marginLeft="48dp"
+    android:layout_marginRight="48dp"
+    android:background="@drawable/rectangle_solid_f9f9f9_corner_10"
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/semi_topbar_default_layout"
+        android:layout_width="match_parent"
+        android:layout_height="47dp"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/loading_iv"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="42dp"
+        android:src="@drawable/loading" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginBottom="41dp"
+        android:layout_marginTop="15dp"
+        android:text="操作中"
+        android:textColor="@color/color_back_000000"
+        android:textSize="16sp" />
+</LinearLayout>

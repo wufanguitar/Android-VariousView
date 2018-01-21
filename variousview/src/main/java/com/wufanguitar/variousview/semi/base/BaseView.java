@@ -33,7 +33,7 @@ public class BaseView {
     protected final int DEFAULT_TOPBAR_TITLE_STRING_COLOR = 0xFF000000;
     protected final int DEFAULT_WHEEL_VIEW_BACKGROUND_COLOR = 0xFFFFFFFF;
 
-    private final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+    public final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             Gravity.BOTTOM
