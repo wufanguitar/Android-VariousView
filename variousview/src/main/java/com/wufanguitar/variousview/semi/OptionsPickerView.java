@@ -32,6 +32,8 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
     protected WheelOptions<T> mWheelOptions;
     // OptionsPickerView的点击事件
     private OnClickListener mOnClickListener;
+    // 是否共用公共布局
+    private boolean mShareCommonLayout;
 
     // 条件选择器布局
     private int mLayoutRes;
@@ -123,6 +125,7 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
     // 构造方法
     public OptionsPickerView(Builder builder) {
         super(builder.mContext);
+        this.mShareCommonLayout = builder.mShareCommonLayout;
         this.mOptionsSelectListener = builder.mOptionsSelectListener;
         this.mOnClickListener = builder.mOnClickListener;
         this.mLeftBtnStr = builder.mLeftBtnStr;
@@ -181,6 +184,9 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
         private Context mContext;
         private OnOptionsSelectListener mOptionsSelectListener;
         private OnClickListener mOnClickListener;
+        // 是否共用公共布局（开发时若多处使用时资源布局一样，只是更换字符串可以使用）
+        // 默认为false
+        private boolean mShareCommonLayout = false;
 
         private String mLeftBtnStr;
         private String mRightBtnStr;
@@ -267,6 +273,12 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
 
         public Builder setDialog(boolean isDialog) {
             this.mIsDialog = isDialog;
+            return this;
+        }
+
+        // 设置是否共用公共布局效果
+        public Builder setShareCommonLayout(boolean shareCommonLayout) {
+            this.mShareCommonLayout = shareCommonLayout;
             return this;
         }
 
@@ -428,7 +440,7 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
         }
     }
 
-
+    @SuppressWarnings("unchecked")
     private void initView(Context context) {
         setDialogOutSideCancelable(mCancelable);
         initViews(mBackgroundColor);
@@ -436,51 +448,67 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
         initEvents();
         if (mICustomLayout == null) {
             inflateCustomView(mLayoutRes);
-
-            // 顶部标题
-            mTopBarRL = (RelativeLayout) findViewById(R.id.rl_topbar);
-            mTopBarRL.setBackgroundColor(mTopBarBgColor == 0 ? DEFAULT_TOPBAR_BACKGROUND_COLOR : mTopBarBgColor);
-            mTitleTv = (AppCompatTextView) findViewById(R.id.title);
-            mTitleTv.setTextSize(mTitleStrSize);
-            mTitleTv.setText(TextUtils.isEmpty(mTitleStr) ? "" : mTitleStr); // 默认为空
-            mTitleTv.setTextColor(mTitleStrColor == 0 ? DEFAULT_TOPBAR_TITLE_STRING_COLOR : mTitleStrColor);
-
-            // 顶部左侧
-            mLeftBtn = (AppCompatTextView) findViewById(R.id.left);
-            mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ?
-                    context.getResources().getString(R.string.cancel) : mLeftBtnStr);
-            mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mLeftBtnStrColor);
-            mLeftBtn.setTextSize(mLeftRightBtnStrSize);
-            mLeftBtn.setTag(mOnClickListener != null ? TAG_LEFT : TAG_CANCEL);
-            mLeftBtn.setOnClickListener(this);
-
-            // 顶部右侧按钮
-            mRightBtn = (AppCompatTextView) findViewById(R.id.right);
-            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? context.getResources().getString(R.string.submit) : mRightBtnStr);
-            mRightBtn.setTextColor(mRightBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mRightBtnStrColor);
-            mRightBtn.setTextSize(mLeftRightBtnStrSize);
-            mRightBtn.setTag(mOnClickListener != null ? TAG_RIGHT : TAG_SUBMIT);
-            mRightBtn.setOnClickListener(this);
         } else if (inflateCustomView(mLayoutRes) != null) {
             mICustomLayout.customLayout(inflateCustomView(mLayoutRes));
+        }
+        // 公共（topbar）
+        // 顶部标题
+        mTitleTv = (AppCompatTextView) findViewById(R.id.title);
+        if (mTitleTv != null) {
+            mTitleTv.setText(TextUtils.isEmpty(mTitleStr) ? "" : mTitleStr);
+            if (!mShareCommonLayout) {
+                mTopBarRL = (RelativeLayout) findViewById(R.id.rl_topbar);
+                mTopBarRL.setBackgroundColor(mTopBarBgColor == 0 ? DEFAULT_TOPBAR_BACKGROUND_COLOR : mTopBarBgColor);
+                mTitleTv.setTextSize(mTitleStrSize);
+                mTitleTv.setTextColor(mTitleStrColor == 0 ? DEFAULT_TOPBAR_TITLE_STRING_COLOR : mTitleStrColor);
+            }
+        }
+
+        // 顶部左侧
+        mLeftBtn = (AppCompatTextView) findViewById(R.id.left);
+        if (mLeftBtn != null) {
+            mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? "" : mLeftBtnStr);
+            if (!mShareCommonLayout) {
+                mLeftBtn.setTextSize(mLeftRightBtnStrSize);
+                mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mLeftBtnStrColor);
+            }
+            mLeftBtn.setTag(mOnClickListener != null ? TAG_LEFT : TAG_CANCEL);
+            if (!TextUtils.isEmpty(mLeftBtnStr)) {
+                mLeftBtn.setOnClickListener(this);
+            }
+        }
+
+        // 顶部右侧按钮
+        mRightBtn = (AppCompatTextView) findViewById(R.id.right);
+        if (mRightBtn != null) {
+            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? "" : mRightBtnStr);
+            if (!mShareCommonLayout) {
+                mRightBtn.setTextSize(mLeftRightBtnStrSize);
+                mRightBtn.setTextColor(mRightBtnStrColor == 0 ? DEFAULT_LEFT_RIGHT_BUTTON_NORMAL_COLOR : mRightBtnStrColor);
+            }
+            mRightBtn.setTag(mOnClickListener != null ? TAG_RIGHT : TAG_SUBMIT);
+            if (!TextUtils.isEmpty(mRightBtnStr)) {
+                mRightBtn.setOnClickListener(this);
+            }
         }
 
         // 滚轮布局
         final LinearLayout optionsPicker = (LinearLayout) findViewById(R.id.wheel_option);
-        optionsPicker.setBackgroundColor(mWheelViewBgColor == 0 ? DEFAULT_WHEEL_VIEW_BACKGROUND_COLOR : mWheelViewBgColor);
-
-        mWheelOptions = new WheelOptions(optionsPicker, mLinkage);
-        mWheelOptions.setTextContentSize(mContentTextSize);
-        mWheelOptions.setLabels(mLabelFirst, mLabelSecond, mLabelThird);
-        mWheelOptions.setTextXOffset(mOptionFirstXOffset, mOptionSecondXOffset, mOptionThirdXOffset);
-        mWheelOptions.setLoop(mIsOptionFirstLoop, mIsOptionSecondLoop, mIsOptionThirdLoop);
-        mWheelOptions.setTypeface(mFontType);
-        mWheelOptions.setDividerColor(mDividerColor);
-        mWheelOptions.setDividerType(mDividerType);
-        mWheelOptions.setLineSpacingMultiplier(mLineSpacingMultiplier);
-        mWheelOptions.setOutTextColor(mOutTextColor);
-        mWheelOptions.setCenterTextColor(mCenterTextColor);
-        mWheelOptions.setCenterLabel(mCenterLabel);
+        if (optionsPicker != null) {
+            optionsPicker.setBackgroundColor(mWheelViewBgColor == 0 ? DEFAULT_WHEEL_VIEW_BACKGROUND_COLOR : mWheelViewBgColor);
+            mWheelOptions = new WheelOptions(optionsPicker, mLinkage);
+            mWheelOptions.setTextContentSize(mContentTextSize);
+            mWheelOptions.setLabels(mLabelFirst, mLabelSecond, mLabelThird);
+            mWheelOptions.setTextXOffset(mOptionFirstXOffset, mOptionSecondXOffset, mOptionThirdXOffset);
+            mWheelOptions.setLoop(mIsOptionFirstLoop, mIsOptionSecondLoop, mIsOptionThirdLoop);
+            mWheelOptions.setTypeface(mFontType);
+            mWheelOptions.setDividerColor(mDividerColor);
+            mWheelOptions.setDividerType(mDividerType);
+            mWheelOptions.setLineSpacingMultiplier(mLineSpacingMultiplier);
+            mWheelOptions.setOutTextColor(mOutTextColor);
+            mWheelOptions.setCenterTextColor(mCenterTextColor);
+            mWheelOptions.setCenterLabel(mCenterLabel);
+        }
 
         setOutSideCancelable(mCancelable);
     }

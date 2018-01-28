@@ -1,5 +1,6 @@
 package com.wufanguitar.variousview.semi;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.AppCompatButton;
@@ -27,12 +28,16 @@ public class ContentView extends BaseView implements View.OnClickListener{
     private static final String TAG_LEFT = "left";
     private static final String TAG_RIGHT = "right";
     private static final String TAG_BOTTOM = "bottom";
-    private int mLayoutRes;
-    private ICustomLayout mCustomLayout;
+    public int mLayoutRes;
+    public ICustomLayout mCustomLayout;
+    // 设置自定义Dialog
+    private Dialog mDialog;
     // ContentView的点击事件
     private OnClickListener mOnClickListener;
 
     private RelativeLayout mTopBarRLayout;
+    // 是否共用公共布局
+    private boolean mShareCommonLayout;
 
     // 顶部标题
     private AppCompatTextView mTitleTv;
@@ -82,8 +87,9 @@ public class ContentView extends BaseView implements View.OnClickListener{
     // 是否能取消
     private boolean mCancelable = false;
 
-    public ContentView(ContentView.Builder builder) {
+    public ContentView(Builder builder) {
         super(builder.mContext);
+        this.mShareCommonLayout = builder.mShareCommonLayout;
         this.mTitleStr = builder.mTitleStr;
         this.mTitleStrColor = builder.mTitleStrColor;
         this.mTitleStrSize = builder.mTitleStrSize;
@@ -105,6 +111,7 @@ public class ContentView extends BaseView implements View.OnClickListener{
         this.mOnClickListener = builder.mOnClickListener;
         this.mLayoutRes = builder.mLayoutRes;
         this.mIsDialog = builder.mIsDialog;
+        this.mDialog = builder.mDialog;
         initView(builder.mContext);
     }
 
@@ -112,10 +119,15 @@ public class ContentView extends BaseView implements View.OnClickListener{
         private final int DEFAULT_TEXT_SIZE = 15;
         private final int DEFAULT_BOTTOM_TEXT_SIZE = 18;
         private final int DEFAULT_LEFT_RIGHT_BOTTON_TEXT_SIZE = 16;
-        private int mLayoutRes = R.layout.semi_content_default_layout;
-        private ICustomLayout mCustomLayout;
+        public int mLayoutRes = R.layout.semi_content_default_layout;
+        public ICustomLayout mCustomLayout;
         private OnClickListener mOnClickListener;
+        // 是否共用公共布局（开发时若多处使用时资源布局一样，只是更换字符串可以使用）
+        // 默认为false
+        private boolean mShareCommonLayout = false;
         private Context mContext;
+        // 设置自定义Dialog
+        private Dialog mDialog;
         // 标题文字
         private String mTitleStr;
         // 标题颜色
@@ -164,6 +176,12 @@ public class ContentView extends BaseView implements View.OnClickListener{
         public Builder(Context context, OnClickListener onClickListener) {
             this.mContext = context;
             this.mOnClickListener = onClickListener;
+        }
+
+        // 设置是否共用公共布局效果
+        public Builder setShareCommonLayout(boolean shareCommonLayout) {
+            this.mShareCommonLayout = shareCommonLayout;
+            return this;
         }
 
         // 设置内容布局
@@ -264,6 +282,12 @@ public class ContentView extends BaseView implements View.OnClickListener{
             return this;
         }
 
+        public Builder setDialog(Dialog dialog) {
+            this.mIsDialog = true;
+            this.mDialog = dialog;
+            return this;
+        }
+
         public Builder setOnClickListener(OnClickListener onClickListener) {
             this.mOnClickListener = onClickListener;
             return this;
@@ -274,7 +298,8 @@ public class ContentView extends BaseView implements View.OnClickListener{
         }
     }
 
-    private void initView(Context context) {
+    public void initView(Context context) {
+        setDialog(mDialog);
         setDialogOutSideCancelable(mCancelable);
         initViews(Color.TRANSPARENT);
         init();
@@ -294,43 +319,59 @@ public class ContentView extends BaseView implements View.OnClickListener{
         }
 
         // 公共部分
-        mTopBarRLayout = (RelativeLayout) findViewById(R.id.rl_topbar);
         // 顶部标题
         mTitleTv = (AppCompatTextView) findViewById(R.id.title);
-        mTitleTv.setText(TextUtils.isEmpty(mTitleStr) ? "" : mTitleStr);
-        mTitleTv.setTextColor(mTitleStrColor == 0 ? TITLE_DEFAULT_COLOR : mTitleStrColor);
-        mTitleTv.setTextSize(mTitleStrSize);
-        mTopBarRLayout.setBackgroundColor(mTitleBgColor == 0 ? DEFAULT_COLOR : mTitleBgColor);
+        if (mTitleTv != null) {
+            mTitleTv.setText(TextUtils.isEmpty(mTitleStr) ? "" : mTitleStr);
+            if (!mShareCommonLayout) {
+                mTitleTv.setTextColor(mTitleStrColor == 0 ? TITLE_DEFAULT_COLOR : mTitleStrColor);
+                mTitleTv.setTextSize(mTitleStrSize);
+                mTopBarRLayout = (RelativeLayout) findViewById(R.id.rl_topbar);
+                mTopBarRLayout.setBackgroundColor(mTitleBgColor == 0 ? DEFAULT_COLOR : mTitleBgColor);
+            }
+        }
 
         // 右侧(默认确定)按钮
         mRightBtn = (AppCompatTextView) findViewById(R.id.right);
-        mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? "" : mRightBtnStr);
-        mRightBtn.setTextColor(mRightBtnStrColor == 0 ? SUBMIT_CANCEL_TEXT_DEFAULT_COLOR : mRightBtnStrColor);
-        mRightBtn.setTextSize(mLeftRightBtnStrSize);
-        mRightBtn.setTag(mOnClickListener != null ? TAG_RIGHT : DEFAULT_CLICK_TAG);
-        if (!TextUtils.isEmpty(mRightBtnStr)) {
-            mRightBtn.setOnClickListener(this);
+        if (mRightBtn != null) {
+            mRightBtn.setText(TextUtils.isEmpty(mRightBtnStr) ? "" : mRightBtnStr);
+            if (!mShareCommonLayout) {
+                mRightBtn.setTextColor(mRightBtnStrColor == 0 ? SUBMIT_CANCEL_TEXT_DEFAULT_COLOR : mRightBtnStrColor);
+                mRightBtn.setTextSize(mLeftRightBtnStrSize);
+            }
+            mRightBtn.setTag(mOnClickListener != null ? TAG_RIGHT : DEFAULT_CLICK_TAG);
+            if (!TextUtils.isEmpty(mRightBtnStr)) {
+                mRightBtn.setOnClickListener(this);
+            }
         }
 
         // 左侧(默认取消)按钮
         mLeftBtn = (AppCompatTextView) findViewById(R.id.left);
-        mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? "" : mLeftBtnStr);
-        mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? SUBMIT_CANCEL_TEXT_DEFAULT_COLOR : mLeftBtnStrColor);
-        mLeftBtn.setTextSize(mLeftRightBtnStrSize);
-        mLeftBtn.setTag(mOnClickListener != null ? TAG_LEFT : DEFAULT_CLICK_TAG);
-        if (!TextUtils.isEmpty(mLeftBtnStr)) {
-            mLeftBtn.setOnClickListener(this);
+        if (mLeftBtn != null) {
+            mLeftBtn.setText(TextUtils.isEmpty(mLeftBtnStr) ? "" : mLeftBtnStr);
+            if (!mShareCommonLayout) {
+                mLeftBtn.setTextColor(mLeftBtnStrColor == 0 ? SUBMIT_CANCEL_TEXT_DEFAULT_COLOR : mLeftBtnStrColor);
+                mLeftBtn.setTextSize(mLeftRightBtnStrSize);
+            }
+            mLeftBtn.setTag(mOnClickListener != null ? TAG_LEFT : DEFAULT_CLICK_TAG);
+            if (!TextUtils.isEmpty(mLeftBtnStr)) {
+                mLeftBtn.setOnClickListener(this);
+            }
         }
 
         // 底部
         mBottomBtn = (AppCompatTextView) findViewById(R.id.bottom);
-        mBottomBtn.setText(TextUtils.isEmpty(mBottomBtnStr) ? "" : mBottomBtnStr);
-        mBottomBtn.setVisibility(TextUtils.isEmpty(mBottomBtnStr) ? View.GONE : View.VISIBLE);
-        mBottomBtn.setTextColor(mBottomBtnStrColor == 0 ? DEFAULT_COLOR : mBottomBtnStrColor);
-        mBottomBtn.setTextSize(mBottomBtnStrSize);
-        mBottomBtn.setTag(mOnClickListener != null ? TAG_BOTTOM : DEFAULT_CLICK_TAG);
-        if (!TextUtils.isEmpty(mBottomBtnStr)) {
-            mBottomBtn.setOnClickListener(this);
+        if (mBottomBtn != null) {
+            mBottomBtn.setText(TextUtils.isEmpty(mBottomBtnStr) ? "" : mBottomBtnStr);
+            mBottomBtn.setVisibility(TextUtils.isEmpty(mBottomBtnStr) ? View.GONE : View.VISIBLE);
+            if (!mShareCommonLayout) {
+                mBottomBtn.setTextColor(mBottomBtnStrColor == 0 ? DEFAULT_COLOR : mBottomBtnStrColor);
+                mBottomBtn.setTextSize(mBottomBtnStrSize);
+            }
+            mBottomBtn.setTag(mOnClickListener != null ? TAG_BOTTOM : DEFAULT_CLICK_TAG);
+            if (!TextUtils.isEmpty(mBottomBtnStr)) {
+                mBottomBtn.setOnClickListener(this);
+            }
         }
 
         setOutSideCancelable(mCancelable);

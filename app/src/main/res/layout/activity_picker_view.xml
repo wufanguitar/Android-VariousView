@@ -124,6 +124,14 @@
                 android:layout_below="@+id/tvTime"
                 android:layout_margin="10dp"
                 android:text="加载动画" />
+
+            <Button
+                android:id="@+id/btn_loading_option_comment"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/tvTime"
+                android:layout_margin="10dp"
+                android:text="加载跳转选择器再跳转备注" />
         </LinearLayout>
 
     </ScrollView>

@@ -33,7 +33,7 @@ public class BaseView {
     protected final int DEFAULT_TOPBAR_TITLE_STRING_COLOR = 0xFF000000;
     protected final int DEFAULT_WHEEL_VIEW_BACKGROUND_COLOR = 0xFFFFFFFF;
 
-    public final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+    public FrameLayout.LayoutParams mParams = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             Gravity.BOTTOM
@@ -44,9 +44,9 @@ public class BaseView {
     // 默认是 activity 的根view
     protected ViewGroup mDecorView;
     // 附加 View 的根View
-    private ViewGroup mRootView;
+    protected ViewGroup mRootView;
     // 附加 Dialog 的根View
-    private ViewGroup mDialogView;
+    protected ViewGroup mDialogView;
     // 自定义布局生成的view所在的根View
     protected ViewGroup mContentContainer;
 
@@ -57,10 +57,10 @@ public class BaseView {
     private Animation mOutAnim;
     private Animation mInAnim;
     // 是否需要进入动画，默认为true
-    // 如果不需要退出动画，直接使用dismissImmediately()方法
+    // 如果不需要退出动画，(非Dialog)直接使用dismissImmediately()方法
     private boolean mIsInAnim = true;
     // 是否需要退出和进入动画，默认为true
-    private boolean mIsAnim = true;
+    protected boolean mIsAnim = true;
 
     private boolean mIsShowing;
     private int mGravity = Gravity.BOTTOM;
@@ -84,13 +84,13 @@ public class BaseView {
             mDialogView.setBackgroundColor(Color.TRANSPARENT);
             // 这个是真正要加载时间选取器的父布局
             mContentContainer = (ViewGroup) mDialogView.findViewById(R.id.content_container);
-            // 设置对话框的左右间距屏幕30
-            this.params.leftMargin = 30;
-            this.params.rightMargin = 30;
-            mContentContainer.setLayoutParams(this.params);
+            // 设置对话框的左右间距屏幕48
+            this.mParams.leftMargin = 48;
+            this.mParams.rightMargin = 48;
+            mContentContainer.setLayoutParams(this.mParams);
             // 创建对话框
             createDialog();
-            // 给背景设置点击事件,这样当点击内容以外的地方会关闭界面
+            // 给背景设置点击事件，这样当点击内容以外的地方会关闭界面
             mDialogView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -113,7 +113,7 @@ public class BaseView {
             }
             // 这个是真正要加载时间选取器的父布局
             mContentContainer = (ViewGroup) mRootView.findViewById(R.id.content_container);
-            mContentContainer.setLayoutParams(params);
+            mContentContainer.setLayoutParams(mParams);
         }
         setKeyBackCancelable(true);
     }
@@ -135,7 +135,7 @@ public class BaseView {
     }
 
     /**
-     * @param view: 是通过哪个View弹出的
+     * @param view:     是通过哪个View弹出的
      * @param isInAnim: 是否显示进入动画效果
      */
     public void show(View view, boolean isInAnim) {
@@ -332,11 +332,13 @@ public class BaseView {
 
     public void createDialog() {
         if (mDialogView != null) {
-            mDialog = new Dialog(mContext, R.style.semi_custom_dialog);
+            if (mDialog == null) {
+                mDialog = new Dialog(mContext, R.style.semi_custom_dialog);
+                mDialog.getWindow().setWindowAnimations(R.style.semi_dialog_animation);
+            }
             // 不能点外面取消，也不能点 back 取消
             mDialog.setCancelable(mIsCancelable);
             mDialog.setContentView(mDialogView);
-            mDialog.getWindow().setWindowAnimations(R.style.semi_dialog_animation);
             mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
@@ -361,14 +363,21 @@ public class BaseView {
     }
 
     public boolean isDialog() {
+        if (mDialog != null) {
+            return true;
+        }
         return false;
     }
 
-    public View getClickView() {
-        return mClickView;
+    public void setDialog(Dialog dialog) {
+        this.mDialog = dialog;
     }
 
-    public View getContentContainer() {
+    public Dialog getDialog() {
+        return mDialog;
+    }
+
+    public ViewGroup getContentContainer() {
         return mContentContainer;
     }
 }

@@ -29,6 +29,7 @@ import com.wufanguitar.variousview.semi.ContentView;
 import com.wufanguitar.variousview.semi.OptionsPickerView;
 import com.wufanguitar.variousview.semi.TimePickerView;
 import com.wufanguitar.variousview.semi.callback.ICustomLayout;
+import com.wufanguitar.variousview.semi.listener.OnDismissListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,10 +50,10 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
 
     /* private ArrayList<ArrayList<ArrayList<IPickerViewData>>> options3Items = new ArrayList<>(); */
     private Button btn_Time, btn_Options, btn_CustomOptions, btn_CustomTime, btn_no_linkage, btn_to_Fragment, btn_ContentView_default,
-            btn_ContentView_reject, btn_ContentView_back, btn_approve_select, btn_reject_approve_comment, btn_show_loading;
+            btn_ContentView_reject, btn_ContentView_back, btn_approve_select, btn_reject_approve_comment, btn_show_loading, btn_loading_option_comment;
 
     private TimePickerView pvTime, pvCustomTime, pvCustomLunar;
-    private OptionsPickerView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack, pvSelectApprove;
+    private OptionsPickerView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack, pvSelectApprove, optionToComment;
     private ContentView cvDefault;
     private ContentView cvReject, cvRejectApproveComment, cvLoading;
     private ArrayList<CardBean> cardItem = new ArrayList<>();
@@ -81,6 +82,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         initCustomOptionSelectApprove();
         initRejectToApproveComment();
         initShowLoadingDialog();
+        initLoadingOptionComment();
 
 
         btn_Time = (Button) findViewById(R.id.btn_Time);
@@ -95,6 +97,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_approve_select = (Button) findViewById(R.id.btn_Option_approve_select);
         btn_reject_approve_comment = (Button) findViewById(R.id.btn_reject_approve_comment);
         btn_show_loading = (Button) findViewById(R.id.btn_show_loading);
+        btn_loading_option_comment = (Button) findViewById(R.id.btn_loading_option_comment);
 
         btn_Time.setOnClickListener(this);
         btn_Options.setOnClickListener(this);
@@ -108,6 +111,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         btn_approve_select.setOnClickListener(this);
         btn_reject_approve_comment.setOnClickListener(this);
         btn_show_loading.setOnClickListener(this);
+        btn_loading_option_comment.setOnClickListener(this);
 
         findViewById(R.id.btn_GotoJsonData).setOnClickListener(this);
         findViewById(R.id.btn_lunar).setOnClickListener(this);
@@ -485,7 +489,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 }).setTitleStr("驳回审核备注")
                 .setRightBtnStr("关闭")
                 .setBottomBtnStr("确认驳回")
-        .build();
+                .build();
     }
 
     public void initShowLoadingDialog() {
@@ -494,21 +498,64 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void customLayout(View v) {
                         ImageView iv = (ImageView) v.findViewById(R.id.loading_iv);
-                        RotateAnimation rotate  = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                        RotateAnimation rotate = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                         AccelerateInterpolator lin = new AccelerateInterpolator();
                         rotate.setInterpolator(lin);
                         rotate.setDuration(2000);//设置动画持续周期
-                        rotate.setRepeatCount(-1);//设置重复次数
+                        rotate.setRepeatCount(1);//设置重复次数
                         rotate.setFillAfter(true);//动画执行完后是否停留在执行完的状态
                         rotate.setStartOffset(10);//执行前的等待时间
                         iv.setAnimation(rotate);
                     }
                 })
                 .build();
-        FrameLayout.LayoutParams layoutParams = cvLoading.params;
-        layoutParams.leftMargin = 48;
-        layoutParams.rightMargin = 48;
+        FrameLayout.LayoutParams layoutParams = cvLoading.mParams;
+        layoutParams.leftMargin = 30;
+        layoutParams.rightMargin = 30;
         cvLoading.getContentContainer().setLayoutParams(layoutParams);
+    }
+
+    public void initLoadingOptionComment() {
+        final ArrayList<String> data = new ArrayList<>();
+        data.add("何爽(深圳)-heshuang01");
+        data.add("常振(北京)-changzhen");
+        data.add("刘洋(北京)-liuyang");
+        data.add("刁学禹(北京)-diaoxueyu");
+        data.add("郭毅(北京)-guoyi");
+        final BackApproveView backApproveView = new BackApproveView(this);
+        optionToComment = new OptionsPickerView.Builder(this,
+                new OptionsPickerView.OnOptionsSelectListener() {
+                    @Override
+                    public void onOptionsSelect(int optionsFirst, int optionsSecond, int optionsThird, View view) {
+                        backApproveView.switchTo("comment");
+                        backApproveView.optionSelected(data.get(optionsFirst));
+                    }
+                }).setBackgroundColor(Color.BLUE)
+                .setShareCommonLayout(true)
+                .setLeftBtnStr("取消")
+                .setRightBtnStr("确定")
+                .setOutSideCancelable(false)
+                .setLayoutRes(R.layout.approve_loading_option_comment, backApproveView)
+                .setOnClickListener(new OptionsPickerView.OnClickListener() {
+                    @Override
+                    public void onLeftClick(View view) {
+                        optionToComment.dismiss();
+                    }
+
+                    @Override
+                    public void onRightClick(View view) {
+                        optionToComment.returnData();
+                    }
+                })
+                .build();
+        backApproveView.setBaseView(optionToComment);
+        optionToComment.setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(Object o) {
+                backApproveView.switchTo("option");
+            }
+        });
+        optionToComment.setNoRelatedPicker(data, null, null);
     }
 
     private void getOptionData() {
@@ -579,6 +626,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
             cvRejectApproveComment.show();
         } else if (v.getId() == R.id.btn_show_loading) {
             cvLoading.show();
+        } else if (v.getId() == R.id.btn_loading_option_comment) {
+            optionToComment.show();
         }
     }
 
