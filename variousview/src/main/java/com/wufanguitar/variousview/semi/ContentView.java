@@ -86,6 +86,8 @@ public class ContentView extends BaseView implements View.OnClickListener{
     private boolean mIsDialog;
     // 是否能取消
     private boolean mCancelable = false;
+    // 按返回键是否可以取消
+    private boolean mBackKeyCancelable;
 
     public ContentView(Builder builder) {
         super(builder.mContext);
@@ -112,6 +114,7 @@ public class ContentView extends BaseView implements View.OnClickListener{
         this.mLayoutRes = builder.mLayoutRes;
         this.mIsDialog = builder.mIsDialog;
         this.mDialog = builder.mDialog;
+        this.mBackKeyCancelable = builder.mBackKeyCancelable;
         initView(builder.mContext);
     }
 
@@ -166,6 +169,8 @@ public class ContentView extends BaseView implements View.OnClickListener{
 
         // 是否能取消((默认提供关闭按钮，故此处默认为false))
         private boolean mCancelable = false;
+        // 按返回键是否可以取消(默认可以取消)
+        private boolean mBackKeyCancelable = true;
         // 是否是对话框模式
         private boolean mIsDialog;
 
@@ -293,6 +298,11 @@ public class ContentView extends BaseView implements View.OnClickListener{
             return this;
         }
 
+        public Builder setBackKeyCancelable(boolean backKeyCancelable) {
+            this.mBackKeyCancelable = backKeyCancelable;
+            return this;
+        }
+
         public ContentView build() {
             return new ContentView(this);
         }
@@ -301,6 +311,7 @@ public class ContentView extends BaseView implements View.OnClickListener{
     public void initView(Context context) {
         setDialog(mDialog);
         setDialogOutSideCancelable(mCancelable);
+        setKeyBackCancelable(mBackKeyCancelable);
         initViews(Color.TRANSPARENT);
         init();
         // 自定义部分

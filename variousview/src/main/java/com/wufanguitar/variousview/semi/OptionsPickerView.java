@@ -122,6 +122,9 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
     private int mOptionSecondXOffset;
     private int mOptionThirdXOffset;
 
+    // 按返回键是否可以取消
+    private boolean mBackKeyCancelable;
+
     // 构造方法
     public OptionsPickerView(Builder builder) {
         super(builder.mContext);
@@ -173,6 +176,8 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
         this.mDividerType = builder.mDividerType;
         this.mBackgroundColor = builder.mBackgroundColor;
         this.mDecorView = builder.mDecorView;
+
+        this.mBackKeyCancelable = builder.mBackKeyCancelable;
         initView(builder.mContext);
     }
 
@@ -234,6 +239,9 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
         private int mOptionFirstXOffset;
         private int mOptionSecondXOffset;
         private int mOptionThirdXOffset;
+
+        // 按返回键是否可以取消(默认可以取消)
+        private boolean mBackKeyCancelable = true;
 
         public Builder(Context context, OnOptionsSelectListener listener) {
             this.mContext = context;
@@ -435,6 +443,11 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
             return this;
         }
 
+        public Builder setBackKeyCancelable(boolean backKeyCancelable) {
+            this.mBackKeyCancelable = backKeyCancelable;
+            return this;
+        }
+
         public OptionsPickerView build() {
             return new OptionsPickerView(this);
         }
@@ -443,6 +456,7 @@ public class OptionsPickerView<T> extends BaseView implements View.OnClickListen
     @SuppressWarnings("unchecked")
     private void initView(Context context) {
         setDialogOutSideCancelable(mCancelable);
+        setKeyBackCancelable(mBackKeyCancelable);
         initViews(mBackgroundColor);
         init();
         initEvents();

@@ -50,8 +50,11 @@ public class BaseView {
     // 自定义布局生成的view所在的根View
     protected ViewGroup mContentContainer;
 
+    private String mTag;
+
     private OnDismissListener mOnDismissListener;
     private OnCancelListerner mOnCancelListerner;
+    private OnBackPressCancelListerner mOnBackPressCancelListerner;
     private boolean mIsDismissing;
 
     private Animation mOutAnim;
@@ -70,6 +73,11 @@ public class BaseView {
     private boolean mIsCancelable;
     // 是通过哪个 View 弹出的
     protected View mClickView;
+
+    // 弹出的view是否能够back键取消
+    protected boolean mBackKeyCancelable;
+    // view的dismiss是否是back键导致
+    protected boolean mDismissByBackKey = false;
 
     public BaseView(Context context) {
         this.mContext = context;
@@ -115,7 +123,7 @@ public class BaseView {
             mContentContainer = (ViewGroup) mRootView.findViewById(R.id.content_container);
             mContentContainer.setLayoutParams(mParams);
         }
-        setKeyBackCancelable(true);
+        setKeyBackListener();
     }
 
     protected void init() {
@@ -263,21 +271,17 @@ public class BaseView {
         return this;
     }
 
-    public void setKeyBackCancelable(boolean isCancelable) {
-        ViewGroup View;
+    public void setKeyBackListener() {
+        ViewGroup view;
         if (isDialog()) {
-            View = mDialogView;
+            view = mDialogView;
         } else {
-            View = mRootView;
+            view = mRootView;
         }
 
-        View.setFocusable(isCancelable);
-        View.setFocusableInTouchMode(isCancelable);
-        if (isCancelable) {
-            View.setOnKeyListener(onKeyBackListener);
-        } else {
-            View.setOnKeyListener(null);
-        }
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.setOnKeyListener(onKeyBackListener);
     }
 
     protected View.OnKeyListener onKeyBackListener = new View.OnKeyListener() {
@@ -285,8 +289,11 @@ public class BaseView {
         public boolean onKey(View v, int keyCode, KeyEvent event) {
             if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == MotionEvent.ACTION_DOWN
                     && isShowing()) {
-                dismiss();
-                cancel(KeyEvent.KEYCODE_BACK);
+                if (mBackKeyCancelable) {
+                    dismiss();
+                    cancel(KeyEvent.KEYCODE_BACK);
+                    mDismissByBackKey = true;
+                }
                 return true;
             }
             return false;
@@ -373,11 +380,35 @@ public class BaseView {
         this.mDialog = dialog;
     }
 
+    public void setKeyBackCancelable(boolean keyBackCancelable) {
+        this.mBackKeyCancelable = keyBackCancelable;
+    }
+
     public Dialog getDialog() {
         return mDialog;
     }
 
-    public ViewGroup getContentContainer() {
-        return mContentContainer;
+    public void setTag(String tag) {
+        this.mTag = tag;
+    }
+
+    public String getTag() {
+        return mTag;
+    }
+
+    public void setDismissByBackKey(boolean dismissByBackKey) {
+        this.mDismissByBackKey = dismissByBackKey;
+    }
+
+    public boolean getDismissByBackKey() {
+        return mDismissByBackKey;
+    }
+
+    public void setOnBackPressCancelListerner(OnBackPressCancelListerner onBackPressCancelListerner) {
+        this.mOnBackPressCancelListerner = onBackPressCancelListerner;
+    }
+
+    public interface OnBackPressCancelListerner {
+        void backPressCancel();
     }
 }

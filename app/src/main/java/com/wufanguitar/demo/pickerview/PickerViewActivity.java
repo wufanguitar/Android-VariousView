@@ -509,10 +509,6 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                     }
                 })
                 .build();
-        FrameLayout.LayoutParams layoutParams = cvLoading.mParams;
-        layoutParams.leftMargin = 30;
-        layoutParams.rightMargin = 30;
-        cvLoading.getContentContainer().setLayoutParams(layoutParams);
     }
 
     public void initLoadingOptionComment() {
