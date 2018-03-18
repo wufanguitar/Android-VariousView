@@ -4,19 +4,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,11 +23,11 @@ import android.widget.Toast;
 import com.wufanguitar.demo.R;
 import com.wufanguitar.demo.pickerview.bean.CardBean;
 import com.wufanguitar.demo.pickerview.bean.ProvinceBean;
-import com.wufanguitar.variousview.semi.ContentView;
-import com.wufanguitar.variousview.semi.OptionsPickerView;
-import com.wufanguitar.variousview.semi.TimePickerView;
-import com.wufanguitar.variousview.semi.callback.ICustomLayout;
-import com.wufanguitar.variousview.semi.listener.OnDismissListener;
+import com.wufanguitar.semi.ContentView;
+import com.wufanguitar.semi.OptionsWheelView;
+import com.wufanguitar.semi.TimeWheelView;
+import com.wufanguitar.semi.callback.ICustomLayout;
+import com.wufanguitar.semi.listener.OnDismissListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,12 +46,12 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<ProvinceBean> options1Items = new ArrayList<>();
     private ArrayList<ArrayList<String>> options2Items = new ArrayList<>();
 
-    /* private ArrayList<ArrayList<ArrayList<IPickerViewData>>> options3Items = new ArrayList<>(); */
+    /* private ArrayList<ArrayList<ArrayList<IWheelViewData>>> options3Items = new ArrayList<>(); */
     private Button btn_Time, btn_Options, btn_CustomOptions, btn_CustomTime, btn_no_linkage, btn_to_Fragment, btn_ContentView_default,
             btn_ContentView_reject, btn_ContentView_back, btn_approve_select, btn_reject_approve_comment, btn_show_loading, btn_loading_option_comment;
 
-    private TimePickerView pvTime, pvCustomTime, pvCustomLunar;
-    private OptionsPickerView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack, pvSelectApprove, optionToComment;
+    private TimeWheelView pvTime, pvCustomTime, pvCustomLunar;
+    private OptionsWheelView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack, pvSelectApprove, optionToComment;
     private ContentView cvDefault;
     private ContentView cvReject, cvRejectApproveComment, cvLoading;
     private ArrayList<CardBean> cardItem = new ArrayList<>();
@@ -124,7 +122,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         Calendar endDate = Calendar.getInstance();
         endDate.set(2027, 2, 28);
         //时间选择器 ，自定义布局
-        pvCustomLunar = new TimePickerView.Builder(this, new TimePickerView.OnTimeSelectListener() {
+        pvCustomLunar = new TimeWheelView.Builder(this, new TimeWheelView.OnTimeSelectListener() {
             @Override
             public void onTimeSelect(Date date, View v) { // 选中事件回调
                 Toast.makeText(PickerViewActivity.this, getTime(date), Toast.LENGTH_SHORT).show();
@@ -166,7 +164,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                      * 公农历切换后调整宽
                      */
                     private void setTimePickerChildWeight(View v, float yearWeight, float weight) {
-                        ViewGroup timepicker = (ViewGroup) v.findViewById(R.id.time);
+                        ViewGroup timepicker = (ViewGroup) v.findViewById(R.id.wheel_time);
                         View year = timepicker.getChildAt(0);
                         LinearLayout.LayoutParams lp = ((LinearLayout.LayoutParams) year.getLayoutParams());
                         lp.weight = yearWeight;
@@ -194,7 +192,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         Calendar endDate = Calendar.getInstance();
         endDate.set(2019, 11, 28);
         //时间选择器
-        pvTime = new TimePickerView.Builder(this, new TimePickerView.OnTimeSelectListener() {
+        pvTime = new TimeWheelView.Builder(this, new TimeWheelView.OnTimeSelectListener() {
             @Override
             public void onTimeSelect(Date date, View v) {//选中事件回调
                 // 这里回调过来的v,就是show()方法里面所添加的 View 参数，如果show的时候没有添加参数，v则为null
@@ -220,10 +218,10 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         /**
          * 注意 ：如果是三级联动的数据(省市区等)，请参照 JsonDataActivity 类里面的写法。
          */
-        pvOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+        pvOptions = new OptionsWheelView.Builder(this, new OptionsWheelView.OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
-                String tx = options1Items.get(options1).getPickerViewData()
+                String tx = options1Items.get(options1).getWheelViewData()
                         + options2Items.get(options1).get(options2);
                 btn_Options.setText(tx);
             }
@@ -242,7 +240,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 .setLabels("省", "市", "区")
                 .setBackgroundColor(0x66000000) // 设置外部遮罩颜色
                 .build();
-        pvOptions.setRelatedPicker(options1Items, options2Items); // 二级选择器
+        pvOptions.setRelatedOptions(options1Items, options2Items); // 二级选择器
     }
 
     private void initCustomTimePicker() {
@@ -262,7 +260,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         Calendar endDate = Calendar.getInstance();
         endDate.set(2027, 2, 28);
         //时间选择器 ，自定义布局
-        pvCustomTime = new TimePickerView.Builder(this, new TimePickerView.OnTimeSelectListener() {
+        pvCustomTime = new TimeWheelView.Builder(this, new TimeWheelView.OnTimeSelectListener() {
             @Override
             public void onTimeSelect(Date date, View v) {//选中事件回调
                 btn_CustomTime.setText(getTime(date));
@@ -315,11 +313,11 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
          * 自定义布局中，id为 optionspicker 或者 timepicker 的布局以及其子控件必须要有，否则会报空指针。
          * 具体可参考demo 里面的两个自定义layout布局。
          */
-        pvCustomOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+        pvCustomOptions = new OptionsWheelView.Builder(this, new OptionsWheelView.OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int options1, int option2, int options3, View v) {
                 //返回的分别是三个级别的选中位置
-                String tx = (String) cardItem.get(options1).getPickerViewData();
+                String tx = (String) cardItem.get(options1).getWheelViewData();
                 btn_CustomOptions.setText(tx);
             }
         })
@@ -349,7 +347,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                             @Override
                             public void onClick(View v) {
                                 getCardData();
-                                pvCustomOptions.setRelatedPicker(cardItem);
+                                pvCustomOptions.setRelatedOptions(cardItem);
                             }
                         });
 
@@ -364,11 +362,11 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 .setDialog(true)
                 .build();
 
-        pvCustomOptions.setRelatedPicker(cardItem);//添加数据
+        pvCustomOptions.setRelatedOptions(cardItem);//添加数据
     }
 
     private void initNoLinkOptionsPicker() {// 不联动的多级选项
-        pvNoLinkOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+        pvNoLinkOptions = new OptionsWheelView.Builder(this, new OptionsWheelView.OnOptionsSelectListener() {
 
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
@@ -380,7 +378,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 Toast.makeText(PickerViewActivity.this, str, Toast.LENGTH_SHORT).show();
             }
         }).build();
-        pvNoLinkOptions.setNoRelatedPicker(food, clothes, computer);
+        pvNoLinkOptions.setNoRelatedOptions(food, clothes, computer);
     }
 
     private void initContentViewDefault() {
@@ -404,7 +402,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         list.add("chenjie(hrdp)");
         list.add("zhengjing01(直属上级审批)");
         list.add("liangshixiong48441(一级目录审批)");
-        cvBack = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+        cvBack = new OptionsWheelView.Builder(this, new OptionsWheelView.OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int optionsFirst, int optionsSecond, int optionsThird, View view) {
                 cvBack.dismissImmediately();
@@ -438,7 +436,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         }).setCenterLabel(true)
                 .setLabels("√", "", "")
                 .build();
-        cvBack.setNoRelatedPicker(list, null, null);
+        cvBack.setNoRelatedOptions(list, null, null);
     }
 
     private void initCustomOptionSelectApprove() {
@@ -448,7 +446,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         data.add("刘洋(北京)-liuyang");
         data.add("刁学禹(北京)-diaoxueyu");
         data.add("郭毅(北京)-guoyi");
-        pvSelectApprove = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+        pvSelectApprove = new OptionsWheelView.Builder(this, new OptionsWheelView.OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int optionsFirst, int optionsSecond, int optionsThird, View view) {
 
@@ -476,7 +474,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
             }
         }).setDividerColor(Color.WHITE)
                 .build();
-        pvSelectApprove.setNoRelatedPicker(data, null, null);
+        pvSelectApprove.setNoRelatedOptions(data, null, null);
     }
 
     public void initRejectToApproveComment() {
@@ -519,8 +517,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         data.add("刁学禹(北京)-diaoxueyu");
         data.add("郭毅(北京)-guoyi");
         final BackApproveView backApproveView = new BackApproveView(this);
-        optionToComment = new OptionsPickerView.Builder(this,
-                new OptionsPickerView.OnOptionsSelectListener() {
+        optionToComment = new OptionsWheelView.Builder(this,
+                new OptionsWheelView.OnOptionsSelectListener() {
                     @Override
                     public void onOptionsSelect(int optionsFirst, int optionsSecond, int optionsThird, View view) {
                         backApproveView.switchTo("comment");
@@ -532,7 +530,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 .setRightBtnStr("确定")
                 .setOutSideCancelable(false)
                 .setLayoutRes(R.layout.approve_loading_option_comment, backApproveView)
-                .setOnClickListener(new OptionsPickerView.OnClickListener() {
+                .setOnClickListener(new OptionsWheelView.OnClickListener() {
                     @Override
                     public void onLeftClick(View view) {
                         optionToComment.dismiss();
@@ -551,13 +549,13 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 backApproveView.switchTo("option");
             }
         });
-        optionToComment.setNoRelatedPicker(data, null, null);
+        optionToComment.setNoRelatedOptions(data, null, null);
     }
 
     private void getOptionData() {
 
         /**
-         * 注意：如果是添加JavaBean实体数据，则实体类需要实现 IPickerViewData 接口，
+         * 注意：如果是添加JavaBean实体数据，则实体类需要实现 IWheelViewData 接口，
          * PickerView会通过getPickerViewText方法获取字符串显示出来。
          */
 

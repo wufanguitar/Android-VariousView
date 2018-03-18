@@ -62,37 +62,37 @@
         android:background="@android:color/white"
         android:orientation="horizontal">
 
-        <com.wufanguitar.variousview.semi.lib.WheelView
+        <com.wufanguitar.semi.lib.WheelView
             android:id="@+id/year"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <com.wufanguitar.variousview.semi.lib.WheelView
+        <com.wufanguitar.semi.lib.WheelView
             android:id="@+id/month"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1.1" />
 
-        <com.wufanguitar.variousview.semi.lib.WheelView
+        <com.wufanguitar.semi.lib.WheelView
             android:id="@+id/day"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1.1" />
 
-        <com.wufanguitar.variousview.semi.lib.WheelView
+        <com.wufanguitar.semi.lib.WheelView
             android:id="@+id/hour"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1.1" />
 
-        <com.wufanguitar.variousview.semi.lib.WheelView
+        <com.wufanguitar.semi.lib.WheelView
             android:id="@+id/minute"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1.1" />
 
-        <com.wufanguitar.variousview.semi.lib.WheelView
+        <com.wufanguitar.semi.lib.WheelView
             android:id="@+id/second"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

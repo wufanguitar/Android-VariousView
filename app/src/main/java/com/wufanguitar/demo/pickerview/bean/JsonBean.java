@@ -1,10 +1,10 @@
 package com.wufanguitar.demo.pickerview.bean;
 
-import com.wufanguitar.variousview.semi.callback.IPickerViewData;
+import com.wufanguitar.semi.callback.IWheelViewData;
 
 import java.util.List;
 
-public class JsonBean  implements IPickerViewData {
+public class JsonBean  implements IWheelViewData {
     /**
      * name : 省份
      * city : [{"name":"北京市","area":["东城区","西城区","崇文区","宣武区","朝阳区"]}]
@@ -29,11 +29,11 @@ public class JsonBean  implements IPickerViewData {
         this.city = city;
     }
 
-    // 实现 IPickerViewData 接口，
+    // 实现 IWheelViewData 接口，
     // 这个用来显示在PickerView上面的字符串，
     // PickerView会通过IPickerViewData获取getPickerViewText方法显示出来。
     @Override
-    public Object getPickerViewData() {
+    public Object getWheelViewData() {
         return this.name;
     }
 

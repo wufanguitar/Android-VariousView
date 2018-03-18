@@ -1,8 +1,8 @@
 package com.wufanguitar.demo.pickerview.bean;
 
-import com.wufanguitar.variousview.semi.callback.IPickerViewData;
+import com.wufanguitar.semi.callback.IWheelViewData;
 
-public class ProvinceBean implements IPickerViewData {
+public class ProvinceBean implements IWheelViewData {
     private long id;
     private String name;
     private String description;
@@ -49,7 +49,7 @@ public class ProvinceBean implements IPickerViewData {
 
     // 这个用来显示在 PickerView 上面的字符串，PickerView 会通过 getPickerViewText 方法获取字符串显示出来
     @Override
-    public Object getPickerViewData() {
+    public Object getWheelViewData() {
         return name;
     }
 }

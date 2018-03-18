@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.wufanguitar.demo.R;
 import com.wufanguitar.demo.pickerview.bean.JsonBean;
-import com.wufanguitar.variousview.semi.OptionsPickerView;
+import com.wufanguitar.semi.OptionsWheelView;
 
 import org.json.JSONArray;
 
@@ -100,11 +100,11 @@ public class JsonDataActivity extends AppCompatActivity implements View.OnClickL
 
     private void ShowPickerView() {// 弹出选择器
 
-        OptionsPickerView pvOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
+        OptionsWheelView pvOptions = new OptionsWheelView.Builder(this, new OptionsWheelView.OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
                 //返回的分别是三个级别的选中位置
-                String tx = options1Items.get(options1).getPickerViewData()+
+                String tx = options1Items.get(options1).getWheelViewData()+
                         options2Items.get(options1).get(options2)+
                         options3Items.get(options1).get(options2).get(options3);
 
@@ -120,7 +120,7 @@ public class JsonDataActivity extends AppCompatActivity implements View.OnClickL
 
         /*pvOptions.setPicker(options1Items);//一级选择器
         pvOptions.setPicker(options1Items, options2Items);//二级选择器*/
-        pvOptions.setRelatedPicker(options1Items, options2Items,options3Items);//三级选择器
+        pvOptions.setRelatedOptions(options1Items, options2Items,options3Items);//三级选择器
         pvOptions.show();
     }
 
@@ -138,7 +138,7 @@ public class JsonDataActivity extends AppCompatActivity implements View.OnClickL
         /**
          * 添加省份数据
          *
-         * 注意：如果是添加的JavaBean实体，则实体类需要实现 IPickerViewData 接口，
+         * 注意：如果是添加的JavaBean实体，则实体类需要实现 IWheelViewData 接口，
          * PickerView会通过getPickerViewText方法获取字符串显示出来。
          */
         options1Items = jsonBean;

@@ -1,8 +1,8 @@
 package com.wufanguitar.demo.pickerview.bean;
 
-import com.wufanguitar.variousview.semi.callback.IPickerViewData;
+import com.wufanguitar.semi.callback.IWheelViewData;
 
-public class CardBean implements IPickerViewData {
+public class CardBean implements IWheelViewData {
     int id;
     String cardNo;
 
@@ -28,7 +28,7 @@ public class CardBean implements IPickerViewData {
     }
 
     @Override
-    public Object getPickerViewData() {
+    public Object getWheelViewData() {
         return cardNo;
     }
 }

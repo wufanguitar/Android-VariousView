@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.wufanguitar.demo.R;
-import com.wufanguitar.variousview.semi.OptionsPickerView;
-import com.wufanguitar.variousview.semi.base.BaseView;
-import com.wufanguitar.variousview.semi.callback.ICustomLayout;
+import com.wufanguitar.semi.OptionsWheelView;
+import com.wufanguitar.semi.base.BaseView;
+import com.wufanguitar.semi.callback.ICustomLayout;
 
 /**
  * @Author: Frank Wu
@@ -92,7 +92,7 @@ public class BackApproveView implements ICustomLayout {
         this.mOptionSelected = selected;
     }
 
-    public void setBaseView(OptionsPickerView optionsPickerView) {
-        mBaseView = optionsPickerView;
+    public void setBaseView(OptionsWheelView optionsWheelView) {
+        mBaseView = optionsWheelView;
     }
 }

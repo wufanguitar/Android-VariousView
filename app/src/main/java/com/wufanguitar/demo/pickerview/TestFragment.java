@@ -14,8 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wufanguitar.demo.R;
-import com.wufanguitar.variousview.semi.TimePickerView;
-import com.wufanguitar.variousview.semi.callback.ICustomLayout;
+import com.wufanguitar.semi.TimeWheelView;
+import com.wufanguitar.semi.callback.ICustomLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,7 +24,7 @@ import java.util.Date;
 public class TestFragment extends Fragment implements View.OnClickListener {
     private View mView;
     private Button btnShow;
-    private TimePickerView pvTime;
+    private TimeWheelView pvTime;
     private FrameLayout mFrameLayout;
     @Nullable
     @Override
@@ -54,7 +54,7 @@ public class TestFragment extends Fragment implements View.OnClickListener {
         Calendar endDate = Calendar.getInstance();
         endDate.set(2019,11,28);
         //时间选择器
-        pvTime = new TimePickerView.Builder(getActivity(), new TimePickerView.OnTimeSelectListener() {
+        pvTime = new TimeWheelView.Builder(getActivity(), new TimeWheelView.OnTimeSelectListener() {
             @Override
             public void onTimeSelect(Date date, View v) {//选中事件回调
                 // 这里回调过来的v,就是show()方法里面所添加的 View 参数，如果show的时候没有添加参数，v则为null
