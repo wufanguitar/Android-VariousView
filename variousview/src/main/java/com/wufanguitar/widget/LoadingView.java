@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingParent;
 import android.support.v4.view.ScrollingView;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -350,6 +349,29 @@ public class LoadingView extends View {
             setVisibility(mEmptyView, GONE);
             setVisibility(mLoadingView, GONE);
         }
+    }
+
+    public LoadingView setEmptyResource(@LayoutRes int emptyResource) {
+        this.mEmptyResource = emptyResource;
+        return this;
+    }
+
+    public LoadingView setRetryResource(@LayoutRes int retryResource) {
+        this.mFailResource = retryResource;
+        return this;
+    }
+
+    public LoadingView setLoadingResource(@LayoutRes int loadingResource) {
+        this.mLoadingResource = loadingResource;
+        return this;
+    }
+
+    public LayoutInflater getInflater() {
+        return mInflater;
+    }
+
+    public void setInflater(LayoutInflater inflater) {
+        this.mInflater = inflater;
     }
 
     public void setOnInflateListener(OnInflateListener inflateListener) {
