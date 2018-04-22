@@ -16,17 +16,14 @@ import android.view.ViewGroup;
  * 获得屏幕相关的辅助类
  */
 public class ScreenUtil {
+    private static int mStatusHeight = -1;
+
     private ScreenUtil() {
-        /* cannot be instantiated */
         throw new UnsupportedOperationException("cannot be instantiated");
     }
 
-   
-    private static int mStatusHeight = -1;
     /**
      * 获得状态栏的高度
-     * @param context
-     * @return mStatusHeight
      */
     public static int getStatusHeight(Context context) {
         if (mStatusHeight != -1) {
@@ -43,11 +40,8 @@ public class ScreenUtil {
         return mStatusHeight;
     }
 
-
     /**
      * 获取当前屏幕截图，不包含状态栏
-     * @param activity
-     * @return bp
      */
     public static Bitmap snapShotWithoutStatusBar(Activity activity) {
         View view = activity.getWindow().getDecorView();
@@ -68,57 +62,60 @@ public class ScreenUtil {
     }
 
     /**
-     * 获取actionbar的像素高度，默认使用android官方兼容包做actionbar兼容 
-     *
-     * @return
+     * 获取actionbar的像素高度，默认使用android官方兼容包做actionbar兼容
      */
     public static int getActionBarHeight(Context context) {
-        int actionBarHeight=0;
-        if(context instanceof AppCompatActivity &&((AppCompatActivity) context).getSupportActionBar()!=null) {
+        int actionBarHeight = 0;
+        if (context instanceof AppCompatActivity && ((AppCompatActivity) context).getSupportActionBar() != null) {
             Log.d("isAppCompatActivity", "==AppCompatActivity");
             actionBarHeight = ((AppCompatActivity) context).getSupportActionBar().getHeight();
-        }else if(context instanceof Activity && ((Activity) context).getActionBar()!=null) {
-            Log.d("isActivity","==Activity");
+        } else if (context instanceof Activity && ((Activity) context).getActionBar() != null) {
+            Log.d("isActivity", "==Activity");
             actionBarHeight = ((Activity) context).getActionBar().getHeight();
-        }else if(context instanceof ActivityGroup){
-            Log.d("ActivityGroup","==ActivityGroup");
-            if (((ActivityGroup) context).getCurrentActivity() instanceof AppCompatActivity && ((AppCompatActivity) ((ActivityGroup) context).getCurrentActivity()).getSupportActionBar()!=null){
+        } else if (context instanceof ActivityGroup) {
+            Log.d("ActivityGroup", "==ActivityGroup");
+            if (((ActivityGroup) context).getCurrentActivity() instanceof AppCompatActivity && ((AppCompatActivity) ((ActivityGroup) context).getCurrentActivity()).getSupportActionBar() != null) {
                 actionBarHeight = ((AppCompatActivity) ((ActivityGroup) context).getCurrentActivity()).getSupportActionBar().getHeight();
-            }else if (((ActivityGroup) context).getCurrentActivity() instanceof Activity && ((Activity) ((ActivityGroup) context).getCurrentActivity()).getActionBar()!=null){
+            } else if (((ActivityGroup) context).getCurrentActivity() instanceof Activity && ((Activity) ((ActivityGroup) context).getCurrentActivity()).getActionBar() != null) {
                 actionBarHeight = ((Activity) ((ActivityGroup) context).getCurrentActivity()).getActionBar().getHeight();
             }
         }
         if (actionBarHeight != 0)
             return actionBarHeight;
         final TypedValue tv = new TypedValue();
-        if(context.getTheme().resolveAttribute( android.support.v7.appcompat.R.attr.actionBarSize, tv, true)){
+        if (context.getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, tv, true)) {
             if (context.getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, tv, true))
                 actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, context.getResources().getDisplayMetrics());
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (context.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
                 actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, context.getResources().getDisplayMetrics());
-        }else {
+        } else {
             if (context.getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, tv, true))
                 actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, context.getResources().getDisplayMetrics());
         }
-        Log.d("actionBarHeight","===="+actionBarHeight);
+        Log.d("actionBarHeight", "====" + actionBarHeight);
         return actionBarHeight;
     }
 
 
     /**
      * 设置view margin
-     * @param v
-     * @param l
-     * @param t
-     * @param r
-     * @param b
      */
-    public static void setMargins (View v, int l, int t, int r, int b) {
+    public static void setMargins(View v, int l, int t, int r, int b) {
         if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
             p.setMargins(l, t, r, b);
             v.requestLayout();
         }
+    }
+
+    public static int dp2px(Context context, float dpValue) {
+        try {
+            final float scale = context.getResources().getDisplayMetrics().density;
+            return (int) (dpValue * scale + 0.5f);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        return 0;
     }
 }
