@@ -1,7 +1,6 @@
 package com.wufanguitar.semi.bar;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.support.annotation.RestrictTo;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -22,19 +21,15 @@ import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
  */
 
 @RestrictTo(LIBRARY_GROUP)
-public class SnackbarContentLayout extends LinearLayout implements
+public class SnackBarContentLayout extends LinearLayout implements
         BaseTransientBar.ContentViewCallback {
     private TextView mMessageView;
-    private Button mActionView;
 
-    private int mMaxWidth;
-    private int mMaxInlineActionWidth;
-
-    public SnackbarContentLayout(Context context) {
+    public SnackBarContentLayout(Context context) {
         this(context, null);
     }
 
-    public SnackbarContentLayout(Context context, AttributeSet attrs) {
+    public SnackBarContentLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -42,15 +37,10 @@ public class SnackbarContentLayout extends LinearLayout implements
     protected void onFinishInflate() {
         super.onFinishInflate();
         mMessageView = (TextView) findViewById(R.id.snackbar_text);
-        mActionView = (Button) findViewById(R.id.snackbar_action);
     }
 
     public TextView getMessageView() {
         return mMessageView;
-    }
-
-    public Button getActionView() {
-        return mActionView;
     }
 
     @Override
@@ -98,12 +88,6 @@ public class SnackbarContentLayout extends LinearLayout implements
         mMessageView.setAlpha(0f);
         mMessageView.animate().alpha(1f).setDuration(duration)
                 .setStartDelay(delay).start();
-
-        if (mActionView.getVisibility() == VISIBLE) {
-            mActionView.setAlpha(0f);
-            mActionView.animate().alpha(1f).setDuration(duration)
-                    .setStartDelay(delay).start();
-        }
     }
 
     @Override
@@ -111,11 +95,5 @@ public class SnackbarContentLayout extends LinearLayout implements
         mMessageView.setAlpha(1f);
         mMessageView.animate().alpha(0f).setDuration(duration)
                 .setStartDelay(delay).start();
-
-        if (mActionView.getVisibility() == VISIBLE) {
-            mActionView.setAlpha(1f);
-            mActionView.animate().alpha(0f).setDuration(duration)
-                    .setStartDelay(delay).start();
-        }
     }
 }

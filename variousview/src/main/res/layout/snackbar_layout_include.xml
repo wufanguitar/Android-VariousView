@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <view xmlns:android="http://schemas.android.com/apk/res/android"
-    class="com.wufanguitar.semi.bar.SnackbarContentLayout"
+    class="com.wufanguitar.semi.bar.SnackBarContentLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical">
@@ -18,15 +18,5 @@
         android:paddingLeft="@dimen/dimen_10_dp"
         android:paddingRight="@dimen/dimen_10_dp"
         android:paddingTop="@dimen/dimen_14_dp" />
-
-    <Button
-        android:id="@+id/snackbar_action"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|right|end"
-        android:layout_marginLeft="@dimen/design_snackbar_extra_spacing_horizontal"
-        android:layout_marginStart="@dimen/design_snackbar_extra_spacing_horizontal"
-        android:minWidth="48dp"
-        android:visibility="gone" />
 
 </view>

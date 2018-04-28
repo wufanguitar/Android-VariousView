@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,7 +16,6 @@ import android.support.annotation.RestrictTo;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.SwipeDismissBehavior;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.WindowInsetsCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -212,12 +210,8 @@ public abstract class BaseTransientBar<B extends BaseTransientBar<B>> {
                 displayDirection == DISPLAY_ON_TOP ? Gravity.TOP : Gravity.BOTTOM);
         mView.setLayoutParams(param);
         if (displayDirection == DISPLAY_ON_TOP && mTargetParent.getLayoutParams() instanceof WindowManager.LayoutParams) {
-            final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                contentLayout.setPadding(0, ScreenUtil.getStatusHeight(mView.getContext()), 0, 0);
-            } else {
-                ScreenUtil.setMargins(contentLayout, 0, ScreenUtil.getStatusHeight(mView.getContext()), 0, 0);
-            }
+            final SnackBarContentLayout contentLayout = (SnackBarContentLayout) mView.getChildAt(0);
+            contentLayout.setPadding(0, ScreenUtil.getStatusHeight(mView.getContext()), 0, 0);
         }
         return (B) this;
     }

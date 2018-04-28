@@ -20,15 +20,12 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -37,7 +34,6 @@ import android.widget.TextView;
 import com.wufanguitar.semi.callback.ICustomLayout;
 import com.wufanguitar.semi.listener.OnSwipeDismissTouchListener;
 import com.wufanguitar.semi.listener.OnUpDismissTouchListener;
-import com.wufanguitar.semi.utils.ScreenUtil;
 import com.wufanguitar.variousview.R;
 
 import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
@@ -54,9 +50,6 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
     public static final int LENGTH_SHORT = BaseTransientBar.LENGTH_SHORT;
     public static final int LENGTH_LONG = BaseTransientBar.LENGTH_LONG;
     public static final int LENGTH_INDEFINITE = BaseTransientBar.LENGTH_INDEFINITE;
-
-    @Nullable
-    private BaseCallback<SnackBar> mCallback;
 
     public static class Callback extends BaseCallback<SnackBar> {
         /**
@@ -89,7 +82,6 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
         }
     }
 
-
     private SnackBar(ViewGroup parent, View content, ContentViewCallback contentViewCallback) {
         super(parent, content, contentViewCallback);
     }
@@ -103,8 +95,8 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
                     + "Please provide a valid view.");
         }
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final SnackbarContentLayout content =
-                (SnackbarContentLayout) inflater.inflate(
+        final SnackBarContentLayout content =
+                (SnackBarContentLayout) inflater.inflate(
                         R.layout.snackbar_layout_include, parent, false);
         final SnackBar snackBar = new SnackBar(parent, content, content);
         snackBar.setText(text);
@@ -147,7 +139,7 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
 
     @NonNull
     public SnackBar setText(@NonNull CharSequence message) {
-        final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
+        final SnackBarContentLayout contentLayout = (SnackBarContentLayout) mView.getChildAt(0);
         final TextView tv = contentLayout.getMessageView();
         tv.setText(message);
         return this;
@@ -159,66 +151,22 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
     }
 
     @NonNull
-    public SnackBar setAction(@StringRes int resId, View.OnClickListener listener) {
-        return setAction(getContext().getText(resId), listener);
-    }
-
-    @NonNull
-    public SnackBar setAction(CharSequence text, final View.OnClickListener listener) {
-        final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
-        final TextView tv = contentLayout.getActionView();
-
-        if (TextUtils.isEmpty(text) || listener == null) {
-            tv.setVisibility(View.GONE);
-            tv.setOnClickListener(null);
-        } else {
-            tv.setVisibility(View.VISIBLE);
-            tv.setText(text);
-            tv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onClick(view);
-                    // Now dismiss the Snackbar
-                    dispatchDismiss(BaseCallback.DISMISS_EVENT_ACTION);
-                }
-            });
-        }
-        return this;
-    }
-
-    @NonNull
-    public SnackBar setActionTextColor(ColorStateList colors) {
-        final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
-        final TextView tv = contentLayout.getActionView();
-        tv.setTextColor(colors);
-        return this;
-    }
-
-    @NonNull
-    public SnackBar setActionTextColor(@ColorInt int color) {
-        final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
-        final TextView tv = contentLayout.getActionView();
-        tv.setTextColor(color);
-        return this;
-    }
-
-    @NonNull
     public SnackBar setBackgroundColor(int colorId) {
-        final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
+        final SnackBarContentLayout contentLayout = (SnackBarContentLayout) mView.getChildAt(0);
         contentLayout.setBackgroundColor(colorId);
         return this;
     }
 
     @NonNull
     public SnackBar setBackgroundResource(@DrawableRes int resid) {
-        final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
+        final SnackBarContentLayout contentLayout = (SnackBarContentLayout) mView.getChildAt(0);
         contentLayout.setBackgroundResource(resid);
         return this;
     }
 
     @NonNull
     public SnackBar addIcon(@DrawableRes int resource) {
-        final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
+        final SnackBarContentLayout contentLayout = (SnackBarContentLayout) mView.getChildAt(0);
         final TextView tv = contentLayout.getMessageView();
         tv.setCompoundDrawablesWithIntrinsicBounds(mView.getResources().getDrawable(resource), null, null, null);
         return this;
@@ -226,7 +174,7 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
 
     @NonNull
     public SnackBar addIcon(@DrawableRes int resource, int width, int height) {
-        final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
+        final SnackBarContentLayout contentLayout = (SnackBarContentLayout) mView.getChildAt(0);
         final TextView tv = contentLayout.getMessageView();
         if (width > 0 || height > 0) {
             Bitmap bitmap = getBitmapFromDrawable(mView.getContext(), resource);
@@ -243,17 +191,14 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
     }
 
     @NonNull
-    public SnackBar addIconWithAnimation(@DrawableRes int resource, int width, int height, @AnimRes int animation) {
-        final SnackbarContentLayout contentLayout = (SnackbarContentLayout) mView.getChildAt(0);
+    public SnackBar addIconWithAnimation(@DrawableRes int resource, @AnimRes int animation) {
+        final SnackBarContentLayout contentLayout = (SnackBarContentLayout) mView.getChildAt(0);
         final TextView tv = contentLayout.getMessageView();
         tv.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-        ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(
-                width == 0 ? ViewGroup.LayoutParams.WRAP_CONTENT : width,
-                height == 0 ? ViewGroup.LayoutParams.WRAP_CONTENT : height);
-        layoutParams.leftMargin = tv.getCompoundDrawablePadding();
         ImageView imageView = new ImageView(mView.getContext());
-        imageView.setImageResource(resource);
-        contentLayout.addView(imageView, 0, layoutParams);
+        imageView.setBackgroundResource(resource);
+        contentLayout.addView(imageView, 0);
+        contentLayout.setPadding(tv.getCompoundDrawablePadding(), contentLayout.getPaddingTop(), contentLayout.getPaddingRight(), contentLayout.getPaddingBottom());
         imageView.startAnimation(AnimationUtils.loadAnimation(mView.getContext(), animation));
         return this;
     }
@@ -274,6 +219,24 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
             }
         }
         return null;
+    }
+
+    public SnackBar setOnClickAction(final View.OnClickListener clickAction) {
+        return setOnClickAction(clickAction, true);
+    }
+
+    public SnackBar setOnClickAction(final View.OnClickListener clickAction, final boolean dismiss) {
+        final SnackBarContentLayout contentLayout = (SnackBarContentLayout) mView.getChildAt(0);
+        contentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickAction.onClick(v);
+                if (dismiss) {
+                    dispatchDismiss(Callback.DISMISS_EVENT_ACTION);
+                }
+            }
+        });
+        return this;
     }
 
     @NonNull
