@@ -5,9 +5,9 @@ import android.support.annotation.RestrictTo;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 
 import com.wufanguitar.variousview.R;
 

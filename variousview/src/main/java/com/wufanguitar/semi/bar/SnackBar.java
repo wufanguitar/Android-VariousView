@@ -2,7 +2,6 @@ package com.wufanguitar.semi.bar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,8 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 import android.os.Build;
 import android.support.annotation.AnimRes;
-import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +19,6 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,10 +44,12 @@ import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
  */
 
 public final class SnackBar extends BaseTransientBar<SnackBar> {
+    public static int LENGTH_SHORT = BaseTransientBar.LENGTH_SHORT;
+    public static int LENGTH_LONG = BaseTransientBar.LENGTH_LONG;
+    public static int LENGTH_INDEFINITE = BaseTransientBar.LENGTH_INDEFINITE;
 
-    public static final int LENGTH_SHORT = BaseTransientBar.LENGTH_SHORT;
-    public static final int LENGTH_LONG = BaseTransientBar.LENGTH_LONG;
-    public static final int LENGTH_INDEFINITE = BaseTransientBar.LENGTH_INDEFINITE;
+    @Nullable
+    private BaseCallback<SnackBar> mCallback;
 
     public static class Callback extends BaseCallback<SnackBar> {
         /**
@@ -82,6 +82,9 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
         }
     }
 
+    // 是否需要进入/退出动画（不控制手动Dismiss时的退出动画）
+    private boolean shouldAnimate = true;
+
     private SnackBar(ViewGroup parent, View content, ContentViewCallback contentViewCallback) {
         super(parent, content, contentViewCallback);
     }
@@ -107,6 +110,16 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
     @NonNull
     public static SnackBar make(@NonNull View view, @StringRes int resId, @Duration int duration) {
         return make(view, view.getResources().getText(resId), duration);
+    }
+
+    @NonNull
+    public static SnackBar make(@NonNull View view, @Duration int duration) {
+        return make(view, "", duration);
+    }
+
+    @NonNull
+    public static SnackBar make(@NonNull View view) {
+        return make(view, "", LENGTH_LONG);
     }
 
     private static ViewGroup findSuitableParent(View view) {
@@ -203,6 +216,44 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
         return this;
     }
 
+    public SnackBar setOnClickAction(final View.OnClickListener clickAction) {
+        return setOnClickAction(clickAction, true);
+    }
+
+    public SnackBar setOnClickAction(final View.OnClickListener clickAction, final boolean dismiss) {
+        mView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickAction.onClick(v);
+                if (dismiss) {
+                    dispatchDismiss(Callback.DISMISS_EVENT_ACTION);
+                }
+            }
+        });
+        return this;
+    }
+
+    public SnackBar setOnClickAction(@IdRes int viewId, final View.OnClickListener clickAction) {
+        return setOnClickAction(viewId, clickAction, true);
+    }
+
+    public SnackBar setOnClickAction(@IdRes int viewId, final View.OnClickListener clickAction, final boolean dismiss) {
+        View view = mView.findViewById(viewId);
+        if (view == null) {
+            return this;
+        }
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickAction.onClick(v);
+                if (dismiss) {
+                    dispatchDismiss(Callback.DISMISS_EVENT_ACTION);
+                }
+            }
+        });
+        return this;
+    }
+
     public Bitmap getBitmapFromDrawable(Context context, @DrawableRes int drawableId) throws IllegalArgumentException {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
         if (drawable instanceof BitmapDrawable) {
@@ -221,31 +272,13 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
         return null;
     }
 
-    public SnackBar setOnClickAction(final View.OnClickListener clickAction) {
-        return setOnClickAction(clickAction, true);
-    }
-
-    public SnackBar setOnClickAction(final View.OnClickListener clickAction, final boolean dismiss) {
-        final SnackBarContentLayout contentLayout = (SnackBarContentLayout) mView.getChildAt(0);
-        contentLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickAction.onClick(v);
-                if (dismiss) {
-                    dispatchDismiss(Callback.DISMISS_EVENT_ACTION);
-                }
-            }
-        });
-        return this;
-    }
-
     @NonNull
     public SnackBar customLayout(@LayoutRes int customLayoutRes, @Nullable ICustomLayout customLayout) {
         mView.removeAllViews();
         View customView = LayoutInflater.from(mView.getContext()).inflate(customLayoutRes, null);
         mView.addView(customView);
         if (customLayout != null) {
-            customLayout.customLayout(customView);
+            customLayout.customLayout(mView);
         }
         return this;
     }
@@ -296,6 +329,16 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
         return this;
     }
 
+    public SnackBar shouldAnimate(boolean should) {
+        shouldAnimate = should;
+        return this;
+    }
+
+    @Override
+    boolean shouldAnimate() {
+        return shouldAnimate;
+    }
+
     @RestrictTo(LIBRARY_GROUP)
     public static final class SnackBarLayout extends BaseTransientBar.SnackbarBaseLayout {
         public SnackBarLayout(Context context) {
@@ -318,9 +361,9 @@ public final class SnackBar extends BaseTransientBar<SnackBar> {
             for (int i = 0; i < childCount; i++) {
                 View child = getChildAt(i);
                 if (child.getLayoutParams().width == ViewGroup.LayoutParams.MATCH_PARENT) {
-                    child.measure(MeasureSpec.makeMeasureSpec(availableWidth, MeasureSpec.EXACTLY),
-                            MeasureSpec.makeMeasureSpec(child.getMeasuredHeight(),
-                                    MeasureSpec.EXACTLY));
+                    child.measure(View.MeasureSpec.makeMeasureSpec(availableWidth, View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(child.getMeasuredHeight(),
+                                    View.MeasureSpec.EXACTLY));
                 }
             }
         }

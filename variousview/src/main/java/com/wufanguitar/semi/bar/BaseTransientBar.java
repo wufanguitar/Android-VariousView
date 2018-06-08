@@ -98,9 +98,9 @@ public abstract class BaseTransientBar<B extends BaseTransientBar<B>> {
     public @interface Duration {
     }
 
-    public static final int LENGTH_INDEFINITE = -2;
-    public static final int LENGTH_SHORT = -1;
-    public static final int LENGTH_LONG = 0;
+    static final int LENGTH_INDEFINITE = -2;
+    static final int LENGTH_SHORT = -1;
+    static final int LENGTH_LONG = 0;
 
     @IntDef({DISPLAY_ON_TOP, DISPLAY_ON_BOTTOM})
     @Retention(RetentionPolicy.SOURCE)
@@ -144,7 +144,7 @@ public abstract class BaseTransientBar<B extends BaseTransientBar<B>> {
     }
 
     final ViewGroup mTargetParent;
-    private final Context mContext;
+    final Context mContext;
     final SnackbarBaseLayout mView;
     private final ContentViewCallback mContentViewCallback;
     private int mDuration;
