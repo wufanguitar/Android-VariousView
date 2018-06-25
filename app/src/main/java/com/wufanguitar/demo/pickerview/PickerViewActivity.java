@@ -210,7 +210,6 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 .setSelectDate(selectedDate)
                 .setRangDate(startDate, endDate)
 //                .setBackgroundId(0x00FFFFFF) //设置外部遮罩颜色
-                .setDecorView(null)
                 .build();
     }
 
@@ -359,7 +358,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                         });
                     }
                 })
-                .setDialog(true)
+                .setDialogStyle(true)
                 .build();
 
         pvCustomOptions.setRelatedOptions(cardItem);//添加数据
@@ -491,7 +490,7 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void initShowLoadingDialog() {
-        cvLoading = new ContentView.Builder(this).isDialog(true)
+        cvLoading = new ContentView.Builder(this).setDialogStyle(true)
                 .setLayoutRes(R.layout.show_loading, new ICustomLayout() {
                     @Override
                     public void customLayout(View v) {
@@ -528,7 +527,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 .setShareCommonLayout(true)
                 .setLeftBtnStr("取消")
                 .setRightBtnStr("确定")
-                .setOutSideCancelable(false)
+                .setOutsideDismiss(true)
+                .setKeybackDismiss(true)
                 .setLayoutRes(R.layout.approve_loading_option_comment, backApproveView)
                 .setOnClickListener(new OptionsWheelView.OnClickListener() {
                     @Override

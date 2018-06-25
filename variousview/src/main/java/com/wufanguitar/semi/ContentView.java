@@ -2,15 +2,14 @@ package com.wufanguitar.semi;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import com.wufanguitar.variousview.R;
 import com.wufanguitar.semi.base.BaseView;
 import com.wufanguitar.semi.callback.ICustomLayout;
+import com.wufanguitar.variousview.R;
 
 /**
  * @Author: Frank Wu
@@ -84,13 +83,6 @@ public class ContentView extends BaseView implements View.OnClickListener {
     // 底部背景颜色
     private int mBottomBtnBgColor;
 
-    // 是否是对话框模式
-    private boolean mIsDialog;
-    // 是否能取消
-    private boolean mCancelable = false;
-    // 按返回键是否可以取消
-    private boolean mBackKeyCancelable;
-
     public ContentView(Builder builder) {
         super(builder.mContext);
         this.mShareCommonLayout = builder.mShareCommonLayout;
@@ -111,14 +103,13 @@ public class ContentView extends BaseView implements View.OnClickListener {
         this.mBottomBtnStrColor = builder.mBottomBtnStrColor;
         this.mBottomBtnStrSize = builder.mBottomBtnStrSize;
         this.mBottomBtnBgColor = builder.mBottomBtnBgColor;
-        this.mCancelable = builder.mCancelable;
+        this.isOutsideDismiss = builder.isOutsideDismiss;
         this.mCustomLayout = builder.mCustomLayout;
         this.mOnClickListener = builder.mOnClickListener;
         this.mLayoutRes = builder.mLayoutRes;
-        this.mIsDialog = builder.mIsDialog;
-        this.mDialog = builder.mDialog;
-        this.mBackKeyCancelable = builder.mBackKeyCancelable;
-        initView(builder.mContext);
+        this.isDialogStyle = builder.isDialogStyle;
+        this.isKeybackDismiss = builder.isKeybackDismiss;
+        initView();
     }
 
     public static class Builder {
@@ -132,8 +123,6 @@ public class ContentView extends BaseView implements View.OnClickListener {
         // 默认为false
         private boolean mShareCommonLayout = false;
         private Context mContext;
-        // 设置自定义Dialog
-        private Dialog mDialog;
         // 标题文字
         private String mTitleStr;
         // 标题颜色
@@ -172,12 +161,9 @@ public class ContentView extends BaseView implements View.OnClickListener {
         // 底部背景颜色
         private int mBottomBtnBgColor;
 
-        // 是否能取消((默认提供关闭按钮，故此处默认为false))
-        private boolean mCancelable = false;
-        // 按返回键是否可以取消(默认可以取消)
-        private boolean mBackKeyCancelable = true;
-        // 是否是对话框模式
-        private boolean mIsDialog;
+        private boolean isOutsideDismiss;
+        private boolean isKeybackDismiss = true;
+        private boolean isDialogStyle;
 
         public Builder(Context context) {
             this.mContext = context;
@@ -292,14 +278,8 @@ public class ContentView extends BaseView implements View.OnClickListener {
             return this;
         }
 
-        public Builder isDialog(boolean isDialog) {
-            this.mIsDialog = isDialog;
-            return this;
-        }
-
-        public Builder setDialog(Dialog dialog) {
-            this.mIsDialog = true;
-            this.mDialog = dialog;
+        public Builder setDialogStyle(boolean dialogStyle) {
+            this.isDialogStyle = dialogStyle;
             return this;
         }
 
@@ -308,8 +288,13 @@ public class ContentView extends BaseView implements View.OnClickListener {
             return this;
         }
 
-        public Builder setBackKeyCancelable(boolean backKeyCancelable) {
-            this.mBackKeyCancelable = backKeyCancelable;
+        public Builder setOutsideDismiss(boolean outsideDismiss) {
+            this.isOutsideDismiss = outsideDismiss;
+            return this;
+        }
+
+        public Builder setKeybackDismiss(boolean keybackDismiss) {
+            this.isKeybackDismiss = keybackDismiss;
             return this;
         }
 
@@ -318,11 +303,8 @@ public class ContentView extends BaseView implements View.OnClickListener {
         }
     }
 
-    public void initView(Context context) {
-        setDialog(mDialog);
-        setDialogOutSideCancelable(mCancelable);
-        setKeyBackCancelable(mBackKeyCancelable);
-        initViews(Color.TRANSPARENT);
+    private void initView() {
+        initViews();
         init();
         // 自定义部分
         if (mCustomLayout == null && mLayoutRes == R.layout.semi_content_default_layout) {
@@ -395,13 +377,6 @@ public class ContentView extends BaseView implements View.OnClickListener {
                 mBottomBtn.setOnClickListener(this);
             }
         }
-
-        setOutSideCancelable(mCancelable);
-    }
-
-    @Override
-    public boolean isDialog() {
-        return mIsDialog;
     }
 
     @Override

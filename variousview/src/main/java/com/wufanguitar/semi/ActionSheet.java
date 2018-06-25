@@ -57,11 +57,6 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
     // 底部背景颜色
     private int mBottomBtnBgColor;
 
-    // 按返回键是否可以取消
-    private boolean mBackKeyCancelable;
-    // 点击外部是否可以取消
-    private boolean mOutSideCancelable;
-
     // 设置ActionSheet的Padding
     private float[] mActionSheetPadding;
     // 设置ActionSheet的圆角
@@ -83,8 +78,8 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
         this.mBottomBtnStrColor = builder.mBottomBtnStrColor;
         this.mBottomBtnStrSize = builder.mBottomBtnStrSize;
         this.mBottomBtnBgColor = builder.mBottomBtnBgColor;
-        this.mBackKeyCancelable = builder.mBackKeyCancelable;
-        this.mOutSideCancelable = builder.mOutSideCancelable;
+        this.isKeybackDismiss = builder.isKeybackDismiss;
+        this.isOutsideDismiss = builder.isOutsideDismiss;
         this.mActionSheetPadding = builder.mActionSheetPadding;
         this.mCornerRadius = builder.mCornerRadius;
         initView();
@@ -110,9 +105,8 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
         private int mBottomBtnStrSize = 16;
         private int mBottomBtnBgColor = Color.WHITE;
 
-        private boolean mBackKeyCancelable = true;
-        // 是否能取消((默认提供关闭按钮，故此处默认为false))
-        private boolean mOutSideCancelable = false;
+        private boolean isKeybackDismiss = true;
+        private boolean isOutsideDismiss = true;
 
         private float[] mActionSheetPadding = new float[]{10f, 0f, 10f, 10f};
         private float mCornerRadius = 5f;
@@ -186,13 +180,13 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
             return this;
         }
 
-        public Builder setBackKeyCancelable(boolean backKeyCancelable) {
-            this.mBackKeyCancelable = backKeyCancelable;
+        public Builder setOutsideDismiss(boolean outsideDismiss) {
+            this.isOutsideDismiss = outsideDismiss;
             return this;
         }
 
-        public Builder setOutSideCancelable(boolean outSideCancelable) {
-            this.mOutSideCancelable = outSideCancelable;
+        public Builder setKeybackDismiss(boolean keybackDismiss) {
+            this.isKeybackDismiss = keybackDismiss;
             return this;
         }
 
@@ -212,16 +206,14 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
     }
 
     public void initView() {
-        setKeyBackCancelable(mBackKeyCancelable);
-        setOutSideCancelable(mOutSideCancelable);
-        initViews(Color.TRANSPARENT);
+        initViews();
         init();
         createDefaultView();
     }
 
     private void createDefaultView() {
         LinearLayout panel = new LinearLayout(mContext);
-        panel.setLayoutParams(mParams);
+//        panel.setLayoutParams(mParams);
         panel.setOrientation(LinearLayout.VERTICAL);
         mContentContainer.addView(panel);
         if (mItemStrList != null && mItemStrArray != null) {

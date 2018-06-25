@@ -86,11 +86,7 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
     private DividerType mDividerType;
 
     // 条目间距倍数，默认1.6F
-    private float mLineSpacingMultiplier = Builder.DEFAULT_LINE_SPACING_MULTIPLIER;
-    // 是否是对话框模式
-    private boolean mIsDialog;
-    // 设置是否能取消（对话框模式下包括外部点击和返回键，非对话框模式仅作用于外部点击）
-    private boolean mCancelable;
+    private float mLineSpacingMultiplier;
     // 多个滚动项时是否联动
     private boolean mLinkage;
 
@@ -122,9 +118,6 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
     private int mOptionSecondXOffset;
     private int mOptionThirdXOffset;
 
-    // 按返回键是否可以取消
-    private boolean mBackKeyCancelable;
-
     // 构造方法
     public OptionsWheelView(Builder builder) {
         super(builder.mContext);
@@ -149,7 +142,7 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
         this.mIsOptionSecondLoop = builder.mIsOptionSecondLoop;
         this.mIsOptionThirdLoop = builder.mIsOptionThirdLoop;
 
-        this.mCancelable = builder.mCancelable;
+        this.isOutsideDismiss = builder.isOutsideDismiss;
         this.mLinkage = builder.mLinkage;
         this.mCenterLabel = builder.mCenterLabel;
 
@@ -172,13 +165,12 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
         this.mLineSpacingMultiplier = builder.mLineSpacingMultiplier;
         this.mICustomLayout = builder.mICustomLayout;
         this.mLayoutRes = builder.mLayoutRes;
-        this.mIsDialog = builder.mIsDialog;
+        this.isDialogStyle = builder.isDialogStyle;
         this.mDividerType = builder.mDividerType;
         this.mBackgroundColor = builder.mBackgroundColor;
-        this.mDecorView = builder.mDecorView;
 
-        this.mBackKeyCancelable = builder.mBackKeyCancelable;
-        initView(builder.mContext);
+        this.isKeybackDismiss = builder.isKeybackDismiss;
+        initView();
     }
 
     public static class Builder {
@@ -208,7 +200,6 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
         private int mTitleStrSize = DEFAULT_TEXT_SIZE + 1;
         private int mContentTextSize = DEFAULT_TEXT_SIZE + 1;
 
-        private boolean mCancelable = true;
         private boolean mLinkage = true;
         private boolean mCenterLabel = true;
 
@@ -217,10 +208,9 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
         private int mDividerColor;
         private DividerType mDividerType;
         private int mBackgroundColor;
-        public ViewGroup mDecorView;
 
         private float mLineSpacingMultiplier = DEFAULT_LINE_SPACING_MULTIPLIER;
-        private boolean mIsDialog;
+        private boolean isDialogStyle;
 
         private String mLabelFirst;
         private String mLabelSecond;
@@ -240,8 +230,8 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
         private int mOptionSecondXOffset;
         private int mOptionThirdXOffset;
 
-        // 按返回键是否可以取消(默认可以取消)
-        private boolean mBackKeyCancelable = true;
+        private boolean isOutsideDismiss = true;
+        private boolean isKeybackDismiss = true;
 
         public Builder(Context context) {
             this.mContext = context;
@@ -283,8 +273,8 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
             return this;
         }
 
-        public Builder setDialog(boolean isDialog) {
-            this.mIsDialog = isDialog;
+        public Builder setDialogStyle(boolean dialogStyle) {
+            this.isDialogStyle = dialogStyle;
             return this;
         }
 
@@ -309,14 +299,6 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
          */
         public Builder setBackgroundColor(int backgroundColor) {
             this.mBackgroundColor = backgroundColor;
-            return this;
-        }
-
-        /**
-         * 必须是 viewgroup，设置要将 wheelview 显示到的容器
-         */
-        public Builder setDecorView(ViewGroup decorView) {
-            this.mDecorView = decorView;
             return this;
         }
 
@@ -347,11 +329,6 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
 
         public Builder setContentTextSize(int contentTextSize) {
             this.mContentTextSize = contentTextSize;
-            return this;
-        }
-
-        public Builder setOutSideCancelable(boolean cancelable) {
-            this.mCancelable = cancelable;
             return this;
         }
 
@@ -447,8 +424,13 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
             return this;
         }
 
-        public Builder setBackKeyCancelable(boolean backKeyCancelable) {
-            this.mBackKeyCancelable = backKeyCancelable;
+        public Builder setOutsideDismiss(boolean outsideDismiss) {
+            this.isOutsideDismiss = outsideDismiss;
+            return this;
+        }
+
+        public Builder setKeybackDismiss(boolean keybackDismiss) {
+            this.isKeybackDismiss = keybackDismiss;
             return this;
         }
 
@@ -458,12 +440,9 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
     }
 
     @SuppressWarnings("unchecked")
-    private void initView(Context context) {
-        setDialogOutSideCancelable(mCancelable);
-        setKeyBackCancelable(mBackKeyCancelable);
-        initViews(mBackgroundColor);
+    private void initView() {
+        initViews();
         init();
-        initEvents();
         if (mICustomLayout == null) {
             inflateCustomView(mLayoutRes);
         } else if (inflateCustomView(mLayoutRes) != null) {
@@ -517,8 +496,6 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
             mWheelOptions = new WheelOptions(optionsWheelView, mLinkage);
             configWheelOptions();
         }
-
-        setOutSideCancelable(mCancelable);
     }
 
     private void configWheelOptions() {
@@ -658,11 +635,6 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
     public OptionsWheelView setOnOptionsSelectListener(OnOptionsSelectListener onOptionsSelectListener) {
         this.mOptionsSelectListener = onOptionsSelectListener;
         return this;
-    }
-
-    @Override
-    public boolean isDialog() {
-        return mIsDialog;
     }
 
     public interface OnClickListener {

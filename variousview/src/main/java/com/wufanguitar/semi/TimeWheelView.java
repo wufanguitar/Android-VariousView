@@ -37,8 +37,7 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
     private static final String TAG_CANCEL = "cancel";
     // 时间选择器布局
     private int mLayoutRes;
-    // 显示时的外部背景色颜色，默认是灰色
-    private int mBackgroundColor;
+
     // 自定义布局回调接口
     private ICustomLayout mICustomLayout;
     // TimeWheelView的点击事件
@@ -77,7 +76,7 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
     // 时间选择器确认的时候回调的接口
     private OnTimeSelectListener mTimeSelectListener;
     // 每个 Item 中内容显示的位置，默认居中
-    private int mGravity = Gravity.CENTER;
+    private int mGravity;
     // 时间显示类型（年/月/日/时/分/秒）
     private boolean[] mTimeType;
 
@@ -109,19 +108,13 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
 
     // 是否循环
     private boolean mIsLoop;
-    // 是否能取消
-    private boolean mCancelable;
     // 是否只显示中间的单位标签
     private boolean mCenterLabel;
     // 是否显示农历
     private boolean mIsLunarCalendar;
 
     // 条目间距倍数，默认1.6F
-    private float mLineSpacingMultiplier = 1.6F;
-    // 是否是对话框模式
-    private boolean mIsDialog;
-    // 按返回键是否可以取消
-    private boolean mBackKeyCancelable;
+    private float mLineSpacingMultiplier;
 
     private String mYearLabel, mMonthLabel, mDayLabel, mHourLabel, mMinuteLabel, mSecondLabel;
     private int mYearXOffset, mMonthXOffset, mDayXOffset, mHourXOffset, mMinuteXOffset, mSecondXOffset;
@@ -152,7 +145,6 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
         this.mIsLoop = builder.mIsLoop;
         this.mCenterLabel = builder.mCenterLabel;
         this.mIsLunarCalendar = builder.mIsLunarCalendar;
-        this.mCancelable = builder.mCancelable;
         this.mYearLabel = builder.mYearLabel;
         this.mMonthLabel = builder.mMonthLabel;
         this.mDayLabel = builder.mDayLabel;
@@ -171,12 +163,11 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
         this.mICustomLayout = builder.mICustomLayout;
         this.mLayoutRes = builder.mLayoutRes;
         this.mLineSpacingMultiplier = builder.mLineSpacingMultiplier;
-        this.mIsDialog = builder.mIsDialog;
         this.mDividerType = builder.mDividerType;
-        this.mBackgroundColor = builder.mBackgroundColor;
-        this.mDecorView = builder.mDecorView;
-        this.mBackKeyCancelable = builder.mBackKeyCancelable;
-        initView(builder.mContext);
+        this.isDialogStyle = builder.isDialogStyle;
+        this.isOutsideDismiss = builder.isOutsideDismiss;
+        this.isKeybackDismiss = builder.isKeybackDismiss;
+        initView();
     }
 
     public static class Builder {
@@ -206,7 +197,7 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
         private int mTopBarBgColor;
 
         private int mLeftRightBtnStrSize = DEFAULT_TEXT_SIZE;
-        ;
+
         private int mTitleStrSize = DEFAULT_TEXT_SIZE + 1;
         private int mContentTextSize = DEFAULT_TEXT_SIZE + 1;
 
@@ -217,25 +208,20 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
         private int mEndYear;
 
         private boolean mIsLoop = false;
-        private boolean mCancelable = true;
         private boolean mCenterLabel = true;
         private boolean mIsLunarCalendar = false;
-
-        public ViewGroup mDecorView;
 
         private int mOutTextColor;
         private int mCenterTextColor;
         private int mDividerColor;
-        private int mBackgroundColor;
 
         private DividerType mDividerType;
 
         private float mLineSpacingMultiplier = DEFAULT_LINE_SPACING_MULTIPLIER;
 
-        private boolean mIsDialog;
-
-        // 按返回键是否可以取消(默认可以取消)
-        private boolean mBackKeyCancelable = true;
+        private boolean isDialogStyle;
+        private boolean isOutsideDismiss;
+        private boolean isKeybackDismiss;
 
         private String mYearLabel, mMonthLabel, mDayLabel,
                 mHourLabel, mMinuteLabel, mSecondLabel;
@@ -287,11 +273,6 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
             return this;
         }
 
-        public Builder setDialog(boolean isDialog) {
-            this.mIsDialog = isDialog;
-            return this;
-        }
-
         public Builder setLeftBtnStr(String leftBtnStr) {
             this.mLeftBtnStr = leftBtnStr;
             return this;
@@ -309,15 +290,6 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
 
         public Builder setLeftBtnStrColor(int leftBtnStrColor) {
             this.mLeftBtnStrColor = leftBtnStrColor;
-            return this;
-        }
-
-        /**
-         * 必须是viewgroup
-         * 设置要将 wheelview 显示到的容器id
-         */
-        public Builder setDecorView(ViewGroup decorView) {
-            this.mDecorView = decorView;
             return this;
         }
 
@@ -401,14 +373,6 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
         }
 
         /**
-         * 显示时的外部背景色颜色，默认是灰色
-         */
-        public Builder setBackgroundColor(int backgroundColor) {
-            this.mBackgroundColor = backgroundColor;
-            return this;
-        }
-
-        /**
          * 设置分割线之间的文字的颜色
          */
         public Builder setCenterTextColor(int centerTextColor) {
@@ -426,16 +390,6 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
 
         public Builder setLoop(boolean isLoop) {
             this.mIsLoop = isLoop;
-            return this;
-        }
-
-        public Builder setOutSideCancelable(boolean cancelable) {
-            this.mCancelable = cancelable;
-            return this;
-        }
-
-        public Builder setBackKeyCancelable(boolean backKeyCancelable) {
-            this.mBackKeyCancelable = backKeyCancelable;
             return this;
         }
 
@@ -472,17 +426,29 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
             return this;
         }
 
+        public Builder setDialogStyle(boolean dialogStyle) {
+            this.isDialogStyle = dialogStyle;
+            return this;
+        }
+
+        public Builder setOutsideDismiss(boolean outsideDismiss) {
+            this.isOutsideDismiss = outsideDismiss;
+            return this;
+        }
+
+        public Builder setKeybackDismiss(boolean keybackDismiss) {
+            this.isKeybackDismiss = keybackDismiss;
+            return this;
+        }
+
         public TimeWheelView build() {
             return new TimeWheelView(this);
         }
     }
 
-    private void initView(Context context) {
-        setDialogOutSideCancelable(mCancelable);
-        setKeyBackCancelable(mBackKeyCancelable);
-        initViews(mBackgroundColor);
+    private void initView() {
+        initViews();
         init();
-        initEvents();
         if (mICustomLayout == null) {
             inflateCustomView(mLayoutRes);
         } else if (inflateCustomView(mLayoutRes) != null) {
@@ -558,16 +524,6 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
             mWheelTime.setCenterTextColor(mCenterTextColor);
             mWheelTime.setCenterLabel(mCenterLabel);
         }
-
-        setOutSideCancelable(mCancelable);
-    }
-
-    /**
-     * 设置默认时间
-     */
-    public void setSelectDate(Calendar selectDate) {
-        this.mSelectDate = selectDate;
-        setTime();
     }
 
     /**
@@ -688,11 +644,6 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
 
     public interface OnTimeSelectListener {
         void onTimeSelect(Date date, View view);
-    }
-
-    @Override
-    public boolean isDialog() {
-        return mIsDialog;
     }
 
     public interface OnClickListener {
