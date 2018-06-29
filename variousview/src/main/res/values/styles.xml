@@ -6,5 +6,4 @@
         <item name="android:windowEnterAnimation">@anim/semi_dialog_scale_in</item>
         <item name="android:windowExitAnimation">@anim/semi_dialog_scale_out</item>
     </style>
-
 </resources>

@@ -29,8 +29,7 @@ public class ContentView extends BaseView implements View.OnClickListener {
     private static final String TAG_BOTTOM = "bottom";
     public int mLayoutRes;
     public ICustomLayout mCustomLayout;
-    // 设置自定义Dialog
-    private Dialog mDialog;
+
     // ContentView的点击事件
     private OnClickListener mOnClickListener;
 

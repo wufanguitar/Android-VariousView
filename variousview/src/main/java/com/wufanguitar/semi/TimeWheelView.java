@@ -5,7 +5,6 @@ import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -14,10 +13,6 @@ import com.wufanguitar.semi.callback.ICustomLayout;
 import com.wufanguitar.semi.lib.DividerType;
 import com.wufanguitar.semi.view.WheelTime;
 import com.wufanguitar.variousview.R;
-import com.wufanguitar.semi.base.BaseView;
-import com.wufanguitar.semi.callback.ICustomLayout;
-import com.wufanguitar.semi.lib.DividerType;
-import com.wufanguitar.semi.view.WheelTime;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -591,7 +586,6 @@ public class TimeWheelView extends BaseView implements View.OnClickListener {
                 }
                 break;
             case TAG_CANCEL:
-                cancel(TAG_CANCEL);
                 dismiss();
                 break;
             case TAG_RIGHT:

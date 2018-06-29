@@ -1,5 +1,7 @@
 package com.wufanguitar.semi.listener;
 
+import com.wufanguitar.annotate.Dismiss;
+
 /**
  * @Author: Frank Wu
  * @Email: wu.fanguitar@163.com
@@ -7,5 +9,5 @@ package com.wufanguitar.semi.listener;
  */
 
 public interface OnDismissListener {
-    void onDismiss(Object o);
+    void onDismiss(@Dismiss int event);
 }

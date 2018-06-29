@@ -1,5 +1,6 @@
 package com.wufanguitar.demo.pickerview;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.wufanguitar.demo.R;
 import com.wufanguitar.demo.pickerview.bean.CardBean;
 import com.wufanguitar.demo.pickerview.bean.ProvinceBean;
+import com.wufanguitar.semi.ActionSheet;
 import com.wufanguitar.semi.ContentView;
 import com.wufanguitar.semi.OptionsWheelView;
 import com.wufanguitar.semi.TimeWheelView;
@@ -53,7 +55,8 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
     private TimeWheelView pvTime, pvCustomTime, pvCustomLunar;
     private OptionsWheelView pvOptions, pvCustomOptions, pvNoLinkOptions, cvBack, pvSelectApprove, optionToComment;
     private ContentView cvDefault;
-    private ContentView cvReject, cvRejectApproveComment, cvLoading;
+    private ContentView cvReject, cvRejectApproveComment;
+    private ActionSheet cvLoading;
     private ArrayList<CardBean> cardItem = new ArrayList<>();
 
     private ArrayList<String> food = new ArrayList<>();
@@ -490,21 +493,56 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void initShowLoadingDialog() {
-        cvLoading = new ContentView.Builder(this).setDialogStyle(true)
-                .setLayoutRes(R.layout.show_loading, new ICustomLayout() {
-                    @Override
-                    public void customLayout(View v) {
-                        ImageView iv = (ImageView) v.findViewById(R.id.loading_iv);
-                        RotateAnimation rotate = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                        AccelerateInterpolator lin = new AccelerateInterpolator();
-                        rotate.setInterpolator(lin);
-                        rotate.setDuration(2000);//设置动画持续周期
-                        rotate.setRepeatCount(1);//设置重复次数
-                        rotate.setFillAfter(true);//动画执行完后是否停留在执行完的状态
-                        rotate.setStartOffset(10);//执行前的等待时间
-                        iv.setAnimation(rotate);
-                    }
-                })
+//        cvLoading = new ContentView.Builder(this).setDialogStyle(true)
+//                .setLayoutRes(R.layout.show_loading, new ICustomLayout() {
+//                    @Override
+//                    public void customLayout(View v) {
+//                        ImageView iv = (ImageView) v.findViewById(R.id.loading_iv);
+//                        RotateAnimation rotate = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//                        AccelerateInterpolator lin = new AccelerateInterpolator();
+//                        rotate.setInterpolator(lin);
+//                        rotate.setDuration(2000);//设置动画持续周期
+//                        rotate.setRepeatCount(1);//设置重复次数
+//                        rotate.setFillAfter(true);//动画执行完后是否停留在执行完的状态
+//                        rotate.setStartOffset(10);//执行前的等待时间
+//                        iv.setAnimation(rotate);
+//                    }
+//                })
+//                .build();
+
+        List<String> arrayList = new ArrayList<>();
+        arrayList.add("武汉01");
+        arrayList.add("武汉02");
+        arrayList.add("武汉03");
+        arrayList.add("武汉04");
+        arrayList.add("武汉05");
+        arrayList.add("武汉06");
+        arrayList.add("武汉07");
+        arrayList.add("武汉08");
+        arrayList.add("武汉09");
+        arrayList.add("武汉10");
+        arrayList.add("武汉11");
+        arrayList.add("武汉12");
+        arrayList.add("武汉13");
+        arrayList.add("武汉14");
+        arrayList.add("武汉15");
+        arrayList.add("武汉16");
+        arrayList.add("武汉17");
+        arrayList.add("武汉18");
+
+        cvLoading = new ActionSheet.Builder(PickerViewActivity.this)
+                .setActionSheetPadding(new float[]{0, 0, 0, 0})
+                .setCornerRadius(0)
+                .setItemStrColor(Color.BLACK)
+                .setBottomBtnStrColor(Color.BLACK)
+                .setItemStrSize(18)
+                .setBottomBtnStrSize(18)
+                .setItemHeight(56)
+                .setBottomBtnHeight(56)
+                .setBottomBtnTopMargin(7)
+                .setBackKeyCancelable(true)
+                .setOutSideCancelable(true)
+                .setItemStrList(arrayList)
                 .build();
     }
 
@@ -543,12 +581,12 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
                 })
                 .build();
         backApproveView.setBaseView(optionToComment);
-        optionToComment.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(Object o) {
-                backApproveView.switchTo("option");
-            }
-        });
+//        optionToComment.setOnDismissListener(new OnDismissListener() {
+//            @Override
+//            public void onDismiss(Object o) {
+//                backApproveView.switchTo("option");
+//            }
+//        });
         optionToComment.setNoRelatedOptions(data, null, null);
     }
 

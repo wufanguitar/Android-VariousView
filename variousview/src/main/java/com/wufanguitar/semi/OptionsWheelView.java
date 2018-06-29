@@ -6,15 +6,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.wufanguitar.variousview.R;
 import com.wufanguitar.semi.base.BaseView;
 import com.wufanguitar.semi.callback.ICustomLayout;
 import com.wufanguitar.semi.lib.DividerType;
 import com.wufanguitar.semi.view.WheelOptions;
+import com.wufanguitar.variousview.R;
 
 import java.util.List;
 
@@ -557,8 +556,8 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
     }
 
     public OptionsWheelView setRelatedOptions(List<T> optionsFirstItems,
-                                             List<List<T>> optionsSecondItems,
-                                             List<List<List<T>>> optionsThirdItems) {
+                                              List<List<T>> optionsSecondItems,
+                                              List<List<List<T>>> optionsThirdItems) {
         mWheelOptions.setRelatedOptions(optionsFirstItems, optionsSecondItems, optionsThirdItems);
         setCurrentItems();
         return this;
@@ -566,8 +565,8 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
 
     // 不联动情况下调用
     public OptionsWheelView setNoRelatedOptions(List<T> optionsFirstItems,
-                                               List<T> optionsSecondItems,
-                                               List<T> optionsThirdItems) {
+                                                List<T> optionsSecondItems,
+                                                List<T> optionsThirdItems) {
         mWheelOptions.setNoRelatedOptions(optionsFirstItems, optionsSecondItems, optionsThirdItems);
         setCurrentItems();
         return this;
@@ -603,7 +602,6 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
                 }
                 break;
             case TAG_CANCEL:
-                cancel(TAG_CANCEL);
                 dismiss();
                 break;
             case TAG_RIGHT:
@@ -619,12 +617,11 @@ public class OptionsWheelView<T> extends BaseView implements View.OnClickListene
         }
     }
 
-    public OptionsWheelView returnData() {
+    public void returnData() {
         if (mOptionsSelectListener != null) {
             int[] optionsCurrentItems = mWheelOptions.getCurrentItems();
             mOptionsSelectListener.onOptionsSelect(optionsCurrentItems[0], optionsCurrentItems[1], optionsCurrentItems[2], mClickView);
         }
-        return this;
     }
 
     public interface OnOptionsSelectListener {
