@@ -1,26 +1,27 @@
 package com.wufanguitar.semi;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Dimension;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
+import com.wufanguitar.annotate.Dismiss;
 import com.wufanguitar.semi.base.BaseView;
 import com.wufanguitar.variousview.R;
 
@@ -73,11 +74,6 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
     // 底部背景颜色
     private int mBottomBtnBgColor;
 
-    // 按返回键是否可以取消
-    private boolean mBackKeyCancelable;
-    // 点击外部是否可以取消
-    private boolean mOutSideCancelable;
-
     // 设置ActionSheet的Padding
     private float[] mActionSheetPadding;
     // 设置ActionSheet的圆角
@@ -102,8 +98,8 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
         this.mBottomBtnStrColor = builder.mBottomBtnStrColor;
         this.mBottomBtnStrSize = builder.mBottomBtnStrSize;
         this.mBottomBtnBgColor = builder.mBottomBtnBgColor;
-        this.mBackKeyCancelable = builder.mBackKeyCancelable;
-        this.mOutSideCancelable = builder.mOutSideCancelable;
+        this.isOutsideDismiss = builder.isOutsideDismiss;
+        this.isKeybackDismiss = builder.isKeybackDismiss;
         this.mActionSheetPadding = builder.mActionSheetPadding;
         this.mCornerRadius = builder.mCornerRadius;
         initView();
@@ -135,9 +131,8 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
         private int mBottomBtnStrSize = 16;
         private int mBottomBtnBgColor = Color.WHITE;
 
-        private boolean mBackKeyCancelable = true;
-        // 是否能取消((默认提供关闭按钮，故此处默认为false))
-        private boolean mOutSideCancelable = false;
+        private boolean isKeybackDismiss = true;
+        private boolean isOutsideDismiss;
 
         private float[] mActionSheetPadding = new float[]{10f, 0f, 10f, 10f};
         private float mCornerRadius = 5f;
@@ -226,13 +221,13 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
             return this;
         }
 
-        public Builder setBackKeyCancelable(boolean backKeyCancelable) {
-            this.mBackKeyCancelable = backKeyCancelable;
+        public Builder setOutsideDismiss(boolean outsideDismiss) {
+            this.isOutsideDismiss = outsideDismiss;
             return this;
         }
 
-        public Builder setOutSideCancelable(boolean outSideCancelable) {
-            this.mOutSideCancelable = outSideCancelable;
+        public Builder setKeybackDismiss(boolean keybackDismiss) {
+            this.isKeybackDismiss = keybackDismiss;
             return this;
         }
 
@@ -251,26 +246,38 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
         }
     }
 
-    public void initView() {
+    private void initView() {
         initViews();
         init();
         createDefaultView();
     }
 
     private void createDefaultView() {
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-        mContentContainer.removeAllViews();
-        mContentContainer.setLayoutParams(layoutParams);
+        FrameLayout.LayoutParams contentContainerLayoutParams = (FrameLayout.LayoutParams) mContentContainer.getLayoutParams();
+        contentContainerLayoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
+        mContentContainer.setLayoutParams(contentContainerLayoutParams);
+
+        ScrollView scrollView = new ScrollView(mContext);
+        scrollView.setVerticalScrollBarEnabled(false);
         LinearLayout panel = new LinearLayout(mContext);
-        layoutParams.gravity = Gravity.BOTTOM;
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
         panel.setLayoutParams(layoutParams);
         panel.setOrientation(LinearLayout.VERTICAL);
-//        ListView listView = new ListView(mContext);
-//        panel.addView(listView);
-        mContentContainer.addView(panel);
+        scrollView.addView(panel);
+
+        LinearLayout parent = new LinearLayout(mContext);
+        parent.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams scrollViewLayoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0, 1.0f
+        );
+        parent.addView(scrollView, scrollViewLayoutParams);
+
+        mContentContainer.addView(parent);
+
         if (mItemStrList != null && mItemStrArray != null) {
             return;
         }
@@ -281,8 +288,6 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
         if (!TextUtils.isEmpty(mSelectedItemStr)) {
             selectedIndex = mItemStrList.indexOf(mSelectedItemStr);
         }
-//        setAdapter(listView, selectedIndex);
-//        setListener(listView);
         int size = mItemStrList.size();
         if (size > 0) {
             for (int i = 0; i < size; i++) {
@@ -295,7 +300,7 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
                 setSelectedItemStrBold(itemTv, selectedIndex == i);
                 itemTv.setBackgroundDrawable(getItemDrawable(i, mItemStrList, dp2px(mCornerRadius), mItemBgColor));
                 itemTv.setOnClickListener(this);
-                LinearLayout.LayoutParams itemParams = createLayoutParams(dp2px(mItemHeight));
+                LinearLayout.LayoutParams itemParams = createLinearLayoutParams(dp2px(mItemHeight));
                 if (i > 0) {
                     itemParams.topMargin = dp2px(0.5f);
                     panel.addView(itemTv, itemParams);
@@ -311,70 +316,27 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
         mBottomBtn.setTextSize(mBottomBtnStrSize);
         mBottomBtn.setTextColor(mBottomBtnStrColor);
         mBottomBtn.setText(TextUtils.isEmpty(mBottomBtnStr) ? mContext.getString(R.string.cancel) : mBottomBtnStr);
-        mBottomBtn.setBackgroundDrawable(getItemDrawable(0, mItemStrList, dp2px(mCornerRadius), mBottomBtnBgColor));
+        mBottomBtn.setBackgroundDrawable(getItemDrawable(-1, null, dp2px(mCornerRadius), mBottomBtnBgColor));
         mBottomBtn.setOnClickListener(this);
-        LinearLayout.LayoutParams bottomParams = createLayoutParams(dp2px(mBottomBtnHeight));
+        LinearLayout.LayoutParams bottomParams = createLinearLayoutParams(dp2px(mBottomBtnHeight));
         bottomParams.topMargin = dp2px(mBottomBtnTopMargin);
-        panel.addView(mBottomBtn, bottomParams);
-        panel.setPadding(dp2px(mActionSheetPadding[0]), dp2px(mActionSheetPadding[1]),
+        parent.addView(mBottomBtn, bottomParams);
+        parent.setPadding(dp2px(mActionSheetPadding[0]), dp2px(mActionSheetPadding[1]),
                 dp2px(mActionSheetPadding[2]), dp2px(mActionSheetPadding[3]));
     }
 
-//    private void setAdapter(ListView listView, final int selectedIndex) {
-//        listView.setAdapter(new BaseAdapter() {
-//            @Override
-//            public View getView(int position, View convertView, ViewGroup parent) {
-//                AppCompatTextView itemTv;
-//                if (convertView == null) {
-//                    convertView = new AppCompatTextView(mContext);
-//                }
-//                itemTv = (AppCompatTextView) convertView;
-//                itemTv.setId(BOTTOM_BUTTON_ID + position + 1);
-//                itemTv.setGravity(Gravity.CENTER);
-//                itemTv.setText(mItemStrList.get(position));
-//                itemTv.setTextSize(mItemStrSize);
-//                itemTv.setTextColor(selectedIndex == position ? mSelectedItemStrColor : mItemStrColor);
-//                setSelectedItemStrBold(itemTv, selectedIndex == position);
-//                itemTv.setBackgroundDrawable(getItemDrawable(position, mItemStrList, dp2px(mCornerRadius), mItemBgColor));
-//                itemTv.setSingleLine(true);
-//                return convertView;
-//            }
-//
-//            @Override
-//            public long getItemId(int position) {
-//                return position;
-//            }
-//
-//            @Override
-//            public Object getItem(int position) {
-//                return mItemStrList.get(position);
-//            }
-//
-//            @Override
-//            public int getCount() {
-//                return mItemStrList.size();
-//            }
-//        });
-//    }
-
-//    private void setListener(ListView listView) {
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                changeItemStyle(view);
-//                dismiss();
-//                if (mOnClickListener != null) {
-//                    mOnClickListener.onItemClick(ActionSheet.this, view.getId() - BOTTOM_BUTTON_ID - 1, view.getId() == BOTTOM_BUTTON_ID);
-//                }
-//            }
-//        });
-//    }
-
-    private Drawable getItemDrawable(int postion, List<String> titles, @Dimension int radius, int color) {
+    private Drawable getItemDrawable(int postion, @Nullable List<String> titles, @Dimension int radius, int color) {
         GradientDrawable gd = new GradientDrawable();
         gd.setShape(GradientDrawable.RECTANGLE);
         gd.setColor(color);
-        int size = titles.size();
+        if (postion == -1) {
+            gd.setCornerRadius(radius);
+            return gd;
+        }
+        int size = 0;
+        if (titles != null) {
+            size = titles.size();
+        }
         switch (size) {
             case 0:
                 return gd;
@@ -402,12 +364,10 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
                 dp, mContext.getResources().getDisplayMetrics());
     }
 
-    public LinearLayout.LayoutParams createLayoutParams(int height) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                height != 0 ? height : FrameLayout.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER);
-        return params;
+    private LinearLayout.LayoutParams createLinearLayoutParams(int height) {
+        return new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                height != 0 ? height : LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
     @Override
@@ -424,10 +384,12 @@ public class ActionSheet extends BaseView implements View.OnClickListener {
             return;
         }
         ViewGroup parent = (ViewGroup) mContentContainer.getChildAt(0);
-        int count = parent.getChildCount();
-        int clickIndex = parent.indexOfChild(view);
-        for (int i = 0; i < count - 1; i++) {
-            AppCompatTextView item = (AppCompatTextView) parent.getChildAt(i);
+        ViewGroup scrollView = (ViewGroup) parent.getChildAt(0);
+        ViewGroup rootView = (ViewGroup) scrollView.getChildAt(0);
+        int count = rootView.getChildCount();
+        int clickIndex = rootView.indexOfChild(view);
+        for (int i = 0; i < count; i++) {
+            AppCompatTextView item = (AppCompatTextView) rootView.getChildAt(i);
             item.setTextColor(clickIndex == i ? mSelectedItemStrColor : mItemStrColor);
             setSelectedItemStrBold(item, clickIndex == i);
         }

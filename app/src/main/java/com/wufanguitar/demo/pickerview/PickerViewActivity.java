@@ -531,17 +531,17 @@ public class PickerViewActivity extends AppCompatActivity implements View.OnClic
         arrayList.add("武汉18");
 
         cvLoading = new ActionSheet.Builder(PickerViewActivity.this)
-                .setActionSheetPadding(new float[]{0, 0, 0, 0})
-                .setCornerRadius(0)
+//                .setActionSheetPadding(new float[]{0, 0, 0, 0})
+//                .setCornerRadius(0)
                 .setItemStrColor(Color.BLACK)
                 .setBottomBtnStrColor(Color.BLACK)
-                .setItemStrSize(18)
-                .setBottomBtnStrSize(18)
-                .setItemHeight(56)
-                .setBottomBtnHeight(56)
-                .setBottomBtnTopMargin(7)
-                .setBackKeyCancelable(true)
-                .setOutSideCancelable(true)
+//                .setItemStrSize(18)
+//                .setBottomBtnStrSize(18)
+//                .setItemHeight(56)
+//                .setBottomBtnHeight(56)
+//                .setBottomBtnTopMargin(7)
+                .setKeybackDismiss(true)
+                .setOutsideDismiss(true)
                 .setItemStrList(arrayList)
                 .build();
     }
